@@ -1,0 +1,252 @@
+/* ================= 0. TOKENS DE DISEÑO (paleta, tipografía, espaciado) ================= */
+:root {
+    /* Color de marca (un solo verde, con variante para hover) */
+    --color-primary: #1B4332;
+    --color-primary-hover: #2D6A4F;
+
+    /* Acento — reservado SOLO para acciones principales (botones de acción, CTA) */
+    --color-accent: #BC6C25;
+    --color-accent-hover: #9C5620;
+
+    /* Semánticos — un único uso cada uno, nunca compartidos */
+    --color-danger: #C0392B;          /* errores, eliminar, cerrar sesión, devoluciones */
+    --color-danger-soft: #FBEAE8;     /* fondo de cajas de error */
+    --color-rating: #E9A23B;          /* SOLO estrellas / destacados / calificación */
+
+    /* Neutros */
+    --color-text: #23281F;
+    --color-text-muted: #5C6660;
+    --color-border: #E3DED2;
+    --color-bg: #FAF6EF;              /* fondo general de la página (único, ya no hay 3 versiones de crema) */
+    --color-surface: #FFFFFF;         /* tarjetas, modales, paneles */
+    --color-surface-hover: #F1EAD9;   /* hover de filas/menús — tono cálido, distinto del acento */
+
+    /* Espaciado en base 8px */
+    --space-1: 8px;
+    --space-2: 16px;
+    --space-3: 24px;
+    --space-4: 32px;
+    --space-5: 40px;
+
+    /* Radios — solo dos tamaños con propósito, más las formas circulares/pill justificadas */
+    --radius-sm: 6px;   /* botones, inputs, badges rectangulares */
+    --radius-md: 12px;  /* tarjetas, modales, paneles, tablas */
+    --radius-pill: 999px;
+
+    /* Sombras — 3 niveles reutilizables en vez de una distinta por componente */
+    --shadow-sm: 0 2px 6px rgba(27, 67, 50, 0.08);
+    --shadow-md: 0 4px 12px rgba(27, 67, 50, 0.12);
+    --shadow-lg: 0 10px 25px rgba(27, 67, 50, 0.18);
+
+    /* Escala tipográfica */
+    --text-xs: 0.8rem;
+    --text-sm: 0.9rem;
+    --text-base: 1rem;
+    --text-lg: 1.25rem;
+    --text-xl: 1.5rem;
+    --text-2xl: 2rem;
+    --text-3xl: 2.5rem;
+
+    --transition: 0.25s ease;
+}
+
+/* ================= 1. BASE Y RESET PROFESIONAL ================= */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: var(--color-bg); color: var(--color-text); }
+.oculto { display: none !important; }
+
+/* ================= 2. ENCABEZADO Y NAVEGACIÓN ================= */
+.encabezado { background-color: var(--color-primary); padding: var(--space-2) var(--space-5); display: flex; justify-content: space-between; align-items: center; color: white; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-md); }
+.enlacelogo { color: white; text-decoration: none; font-size: var(--text-2xl); font-weight: bold; }
+.navegacion { display: flex; gap: var(--space-2); align-items: center; }
+.enlacenav { color: white; text-decoration: none; font-weight: bold; cursor: pointer; transition: color var(--transition); }
+.enlacenav:hover { color: var(--color-rating); }
+
+/* Menú Desplegable (Servicios) */
+.menudesplegable { position: relative; display: inline-block; }
+.contenidodesplegable { display: none; position: absolute; background-color: var(--color-surface); min-width: 180px; box-shadow: var(--shadow-md); z-index: 1; border-radius: var(--radius-sm); overflow: hidden; }
+.contenidodesplegable a { color: var(--color-primary); padding: 12px 16px; text-decoration: none; display: block; font-weight: bold; }
+.contenidodesplegable a:hover { background-color: var(--color-surface-hover); }
+.menudesplegable:hover .contenidodesplegable { display: block; }
+
+/* Iconos Nav (Perfil y Carrito) */
+.contenedornaviconos { display: flex; gap: var(--space-2); align-items: center; }
+.botonperfil { background: var(--color-accent); color: white; border: none; width: 40px; height: 40px; border-radius: var(--radius-pill); font-size: var(--text-lg); cursor: pointer; display: flex; justify-content: center; align-items: center; text-decoration: none; position: relative; transition: background var(--transition); }
+.botonperfil:hover { background: var(--color-accent-hover); }
+.fotominicirculo { width: 100%; height: 100%; border-radius: var(--radius-pill); object-fit: cover; }
+.contadorcarrito { position: absolute; top: -5px; right: -5px; background: var(--color-danger); color: white; font-size: var(--text-xs); font-weight: bold; width: 20px; height: 20px; border-radius: var(--radius-pill); display: flex; justify-content: center; align-items: center; }
+
+/* Menú Perfil */
+.contenedorperfil { position: relative; }
+.menuperfil { display: none; position: absolute; right: 0; top: 50px; background: var(--color-surface); min-width: 160px; box-shadow: var(--shadow-md); border-radius: var(--radius-sm); padding: var(--space-2); z-index: 1000; }
+.menuperfil p { margin-bottom: var(--space-2); color: var(--color-primary); text-align: center; }
+.menuperfil hr { border: 0; border-top: 1px solid var(--color-border); margin: var(--space-1) 0; }
+.menuperfil a { display: block; padding: var(--space-1); color: var(--color-text); text-decoration: none; font-size: var(--text-sm); text-align: center; }
+.menuperfil a:hover { background: var(--color-surface-hover); font-weight: bold; }
+
+/* ================= 3. HERO Y BUSCADOR ================= */
+.seccionhero {
+    position: relative;
+    height: 320px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: var(--color-primary);
+    border-bottom-left-radius: 50% 10px;
+    border-bottom-right-radius: 50% 10px;
+}
+
+/* Capas de las imágenes de fondo */
+.hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    z-index: 1;
+}
+.hero-bg.activo {
+    opacity: 1;
+}
+
+/* Capa oscura semitransparente para que el texto y el buscador resalten sin lastimar la vista */
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(27, 67, 50, 0.65);
+    z-index: 2;
+}
+
+/* Contenido (Texto y Buscador por encima del fondo) */
+.seccionhero > *:not(.hero-bg):not(.hero-overlay) {
+    position: relative;
+    z-index: 3;
+}
+
+.seccionhero h1 {
+    font-size: var(--text-3xl);
+    color: white;
+    margin-bottom: var(--space-2);
+    text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.cajabuscador {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    gap: var(--space-1);
+}
+.cajabuscador input { flex: 1; padding: var(--space-2); border-radius: var(--radius-pill); border: none; outline: none; font-size: var(--text-base); }
+#botonbuscar { padding: 10px var(--space-3); border-radius: var(--radius-pill); border: none; background-color: var(--color-accent); color: white; font-weight: bold; cursor: pointer; transition: background var(--transition); }
+#botonbuscar:hover { background-color: var(--color-accent-hover); }
+
+
+
+/* ================= 4. CÍRCULOS DE CATEGORÍAS ================= */
+.barracategorias-circulos { display: flex; justify-content: center; gap: var(--space-3); padding: var(--space-4) var(--space-2); flex-wrap: wrap; }
+.circulocategoria { width: 90px; height: 90px; perspective: 1000px; cursor: pointer; }
+.circulo-interno { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+.circulocategoria.activo .circulo-interno { transform: rotateY(180deg); }
+.circulocategoria:hover:not(.activo) .circulo-interno { transform: scale(1.05); }
+.circulo-frente, .circulo-dorso { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: var(--radius-pill); display: flex; justify-content: center; align-items: center; box-shadow: var(--shadow-sm); border: 3px solid white; }
+.circulo-frente { background-color: var(--color-primary); }
+.circulo-frente .icono-cat { font-size: var(--text-2xl); }
+.circulo-dorso { background-color: var(--color-accent); transform: rotateY(180deg); padding: 5px; }
+.circulo-dorso span { color: white; font-weight: bold; font-size: var(--text-xs); text-align: center; line-height: 1.1; }
+
+/* Filtros */
+.cajafiltros { display: flex; justify-content: center; padding: 10px var(--space-2) var(--space-4) var(--space-2); }
+.filtroselect { padding: 10px var(--space-2); border-radius: var(--radius-pill); border: 2px solid var(--color-primary); outline: none; color: var(--color-primary); font-weight: bold; cursor: pointer; background: var(--color-surface); }
+
+/* ================= 5. CATÁLOGO Y CARTAS 3D ================= */
+.seccioncatalogo { padding: var(--space-2); max-width: 1200px; margin: 0 auto; }
+.cabeceracatalogo { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2); border-bottom: 3px solid var(--color-accent); padding-bottom: var(--space-1); }
+.cabeceracatalogo h2 { color: var(--color-primary); font-size: var(--text-2xl); }
+.botonaccion { background: var(--color-accent); color: white; border: none; padding: 10px var(--space-2); border-radius: var(--radius-sm); cursor: pointer; font-weight: bold; text-decoration: none; transition: background var(--transition); }
+.botonaccion:hover { background: var(--color-accent-hover); }
+
+.grillaproductos { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-3); padding: var(--space-2); width: 100%; }
+
+/* Motor de las cartas */
+.tarjeta { width: 250px; height: 320px; perspective: 1000px; cursor: pointer; position: relative; }
+.estrelladestacado { position: absolute; top: -10px; left: -10px; background: var(--color-rating); color: white; width: 35px; height: 35px; border-radius: var(--radius-pill); display: flex; justify-content: center; align-items: center; font-size: var(--text-lg); box-shadow: var(--shadow-sm); z-index: 10; border: 2px solid white; }
+.tarjetainterna { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+.tarjeta.girada .tarjetainterna { transform: rotateY(180deg); }
+.frente, .dorso { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: var(--space-2); }
+.frente { background-color: var(--color-surface); border: 2px solid var(--color-primary); }
+.dorso { background-color: var(--color-surface-hover); transform: rotateY(180deg); border: 2px solid var(--color-accent); }
+
+/* Contenido de la carta */
+.tarjeta .icono { font-size: 5rem; display: block; margin-bottom: var(--space-2); }
+.imgfrente { width: 120px; height: 120px; object-fit: cover; border-radius: var(--radius-pill); margin-bottom: var(--space-2); border: 4px solid var(--color-surface-hover); }
+.frente h3, .dorso h3 { margin: 0; color: var(--color-primary); font-size: var(--text-lg); }
+.preciotexto { font-size: var(--text-xl); color: var(--color-primary); font-weight: bold; margin: var(--space-2) 0; }
+
+/* ================= 6. MODALES Y NOTIFICACIONES ================= */
+.fondomodal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); justify-content: center; align-items: center; z-index: 2000; }
+.cajamodal { background: var(--color-surface); padding: var(--space-3); border-radius: var(--radius-md); width: 90%; max-width: 400px; position: relative; box-shadow: var(--shadow-lg); }
+.cerrarmodal { position: absolute; top: 10px; right: 15px; font-size: var(--text-xl); cursor: pointer; color: var(--color-danger); font-weight: bold; }
+.cajamodal input, .cajamodal select, .cajamodal textarea { width: 100%; padding: 12px; margin-bottom: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
+.errormodal { color: var(--color-danger); font-size: var(--text-xs); margin-bottom: var(--space-1); display: none; font-weight: bold; text-align: center; }
+
+/* Animación Toast */
+.cajanotificacion { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: var(--color-primary); color: white; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-weight: bold; z-index: 9999; opacity: 0; transition: all 0.4s ease; }
+.cajanotificacion.mostrar { bottom: 40px; opacity: 1; }
+.cajanotificacion.error { background: var(--color-danger); }
+
+/* ================= 7. PÁGINAS INTERNAS (PERFIL, PEDIDOS) ================= */
+.contenedorinterno { max-width: 1200px; margin: var(--space-4) auto; padding: 0 var(--space-2); min-height: 70vh; }
+.titulointerno { color: var(--color-primary); font-size: var(--text-3xl); border-bottom: 3px solid var(--color-accent); padding-bottom: var(--space-1); margin-bottom: var(--space-3); }
+.layoutpanel { display: flex; gap: var(--space-3); align-items: flex-start; flex-wrap: wrap; }
+.barralateral { background: var(--color-surface); padding: var(--space-2); border-radius: var(--radius-md); width: 100%; max-width: 280px; box-shadow: var(--shadow-sm); }
+.barralateral img { width: 100px; height: 100px; border-radius: var(--radius-pill); margin: 0 auto var(--space-2) auto; display: block; border: 3px solid var(--color-accent); object-fit: cover; }
+.barralateral h3 { text-align: center; color: var(--color-primary); margin-bottom: var(--space-2); }
+.barralateral a { display: block; padding: 12px; color: var(--color-text); text-decoration: none; border-bottom: 1px solid var(--color-border); transition: background var(--transition); }
+.barralateral a:hover, .barralateral a.activo { background-color: var(--color-surface-hover); font-weight: bold; color: var(--color-primary); border-left: 4px solid var(--color-accent); }
+
+.contenidopanel { background: var(--color-surface); padding: var(--space-4); border-radius: var(--radius-md); flex: 1; min-width: 300px; box-shadow: var(--shadow-sm); }
+.forminterno label { display: block; margin-top: var(--space-2); color: var(--color-primary); font-weight: bold; font-size: var(--text-sm); }
+.forminterno input, .forminterno textarea, .forminterno select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); outline: none; }
+
+/* Historial de Pedidos */
+.tarjetapedido { border: 1px solid var(--color-border); padding: var(--space-2); margin-bottom: var(--space-2); border-left: 5px solid var(--color-accent); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
+.estadopedido { background: var(--color-primary); color: white; padding: 5px var(--space-2); border-radius: var(--radius-pill); font-size: var(--text-xs); font-weight: bold; }
+.estadopedido.pendiente { background: var(--color-accent); }
+.estadopedido.devolucion { background: var(--color-danger); }
+
+/* ================= 8. PANELES DE ADMINISTRACIÓN Y VENDEDOR ================= */
+.tabladatos { width: 100%; border-collapse: collapse; margin-top: var(--space-2); background: var(--color-surface); box-shadow: var(--shadow-sm); border-radius: var(--radius-md); overflow: hidden; }
+.tabladatos th, .tabladatos td { padding: var(--space-2); text-align: left; border-bottom: 1px solid var(--color-border); }
+.tabladatos th { background-color: var(--color-primary); color: white; font-weight: bold; }
+.tabladatos tr:hover { background-color: var(--color-surface-hover); }
+.btn-editar { background: var(--color-rating); color: white; padding: 5px 10px; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: bold; }
+.btn-eliminar { background: var(--color-danger); color: white; padding: 5px 10px; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: bold; }
+
+/* Tarjetas de Resumen (Admin) */
+.grillaresumen { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-2); margin-bottom: var(--space-3); }
+.tarjetaresumen { background: var(--color-surface); padding: var(--space-2); border-radius: var(--radius-md); border-left: 5px solid var(--color-accent); box-shadow: var(--shadow-sm); }
+.tarjetaresumen h3 { color: var(--color-text-muted); font-size: var(--text-sm); margin-bottom: var(--space-1); }
+.tarjetaresumen p { color: var(--color-primary); font-size: var(--text-2xl); font-weight: bold; }
+
+/* ================= 9. SISTEMA DE RESEÑAS TIPO PLAY STORE ================= */
+.caja-opiniones { margin-top: var(--space-2); padding-top: var(--space-2); border-top: 2px dashed var(--color-border); text-align: left; }
+.resumen-calificacion { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); }
+.nota-promedio { font-size: 4rem; font-weight: bold; color: var(--color-primary); line-height: 1; }
+.estrellas-promedio { color: var(--color-rating); font-size: var(--text-xl); }
+.barras-calificacion { flex: 1; }
+.fila-barra { display: flex; align-items: center; gap: var(--space-1); margin-bottom: 5px; font-size: var(--text-xs); font-weight: bold; color: var(--color-text-muted); }
+.barra-fondo { flex: 1; background: var(--color-border); height: 10px; border-radius: var(--radius-pill); overflow: hidden; }
+.barra-llena { background: var(--color-primary); height: 100%; border-radius: var(--radius-pill); }
+.comentario-item { border-bottom: 1px solid var(--color-border); padding: var(--space-1) 0; }
+.comentario-item h4 { color: var(--color-text); font-size: var(--text-sm); }
+.comentario-item span { color: var(--color-rating); }
+.comentario-item p { color: var(--color-text-muted); font-size: var(--text-xs); margin-top: 5px; }

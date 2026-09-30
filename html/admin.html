@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Feriapp</title>
+    <link rel="stylesheet" href="../css/principal.css">
+    <style>
+        .admin-nav { display: flex; gap: 10px; margin-bottom: 20px; }
+        .admin-nav button { padding: 10px 20px; border: none; background: #eee; cursor: pointer; border-radius: 4px; font-weight: bold; color: #666; transition: 0.3s; }
+        .admin-nav button.activo { background: #bc6c25; color: white; }
+        .panel-seccion { display: none; }
+        .panel-seccion.activo { display: block; animation: fadeIn 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="contenedorinterno" style="max-width: 1400px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; background: #2d5a27; padding: 20px; border-radius: 8px; color: white; margin-bottom: 30px;">
+            <h1 style="margin: 0;">⚙️ panel central (modo dios)</h1>
+            <a href="principal.html" class="botonaccion" style="background: white; color: #2d5a27;">salir al catálogo</a>
+        </div>
+
+        <div class="grillaresumen">
+            <div class="tarjetaresumen"><h3>Ventas Totales</h3><p id="admin-ventas">$0</p></div>
+            <div class="tarjetaresumen" style="border-left-color: #2d5a27;"><h3>Nota Feriapp</h3><p id="admin-nota">0.0 ⭐</p></div>
+            <div class="tarjetaresumen" style="border-left-color: #ffb703;"><h3>Usuarios Activos</h3><p id="admin-users-count">0</p></div>
+        </div>
+
+        <div class="layoutpanel">
+            <section class="contenidopanel" style="flex: 2;">
+                <!-- Navegación interna del Admin -->
+                <div class="admin-nav">
+                    <button class="activo" onclick="cambiarPestaña('sec-productos', this)">📦 Gestión de Productos</button>
+                    <button onclick="cambiarPestaña('sec-usuarios', this)">👥 Control de Usuarios</button>
+                    <button onclick="cambiarPestaña('sec-resenas', this)">⭐ Reseñas de la App</button>
+                </div>
+
+                <!-- SECCIÓN 1: PRODUCTOS -->
+                <div id="sec-productos" class="panel-seccion activo">
+                    <input type="text" id="admin-buscar" placeholder="🔍 Buscar producto..." style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; width: 100%; margin-bottom: 15px;">
+                    <table class="tabladatos" id="tabla-admin-prod">
+                        <thead><tr><th>ID</th><th>Nombre</th><th>Precio</th><th>Acciones</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- SECCIÓN 2: USUARIOS (NUEVO) -->
+                <div id="sec-usuarios" class="panel-seccion">
+                    <p style="color: #666; margin-bottom: 15px;">Suspende o elimina cuentas que incumplan las normas.</p>
+                    <table class="tabladatos" id="tabla-admin-users">
+                        <thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- SECCIÓN 3: RESEÑAS DE LA APP (NUEVO) -->
+                <div id="sec-resenas" class="panel-seccion">
+                    <p style="color: #666; margin-bottom: 15px;">Esto es lo que piensan los clientes de tu plataforma.</p>
+                    <div id="lista-resenas-app"></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="../js/principal.js"></script>
+    <script>
+        // Navegación por pestañas
+        function cambiarPestaña(idSeccion, boton) {
+            document.querySelectorAll('.panel-seccion').forEach(s => s.classList.remove('activo'));
+            document.querySelectorAll('.admin-nav button').forEach(b => b.classList.remove('activo'));
+            document.getElementById(idSeccion).classList.add('activo');
+            boton.classList.add('activo');
+        }
+
+        // Usuarios de demostración: en esta etapa viven solo en memoria.
+        // La autenticación real todavía NO guarda cuentas en localStorage.
+        let usuariosAdminDemo = [
+            { id: 'U1', nombre: 'Juan Comprador', rol: 'comprador', estado: 'activo' },
+            { id: 'U2', nombre: 'Finca Los Pinos', rol: 'vendedor', estado: 'activo' },
+            { id: 'U3', nombre: 'Estafador123', rol: 'vendedor', estado: 'suspendido' }
+        ];
+
+        function cargarAdmin(filtro = '') {
+           // 1. CARGAR PRODUCTOS
+            const inventario = FeriApp.safeParse(localStorage.getItem('catalogo_v3'), []);
+            const tablaProd = document.querySelector('#tabla-admin-prod tbody');
+
+            let ventasTotales = 0;
+            Object.keys(localStorage).forEach((key) => {
+                if (!key.startsWith('historialpedidos_')) return;
+                const pedidos = FeriApp.safeParse(localStorage.getItem(key), []);
+                if (Array.isArray(pedidos)) pedidos.forEach((pedido) => { ventasTotales += Number(pedido.total) || 0; });
+            });
+            const historialLegacy = FeriApp.safeParse(localStorage.getItem('historialpedidos'), []);
+            if (Array.isArray(historialLegacy)) historialLegacy.forEach((pedido) => { ventasTotales += Number(pedido.total) || 0; });
+            document.getElementById('admin-ventas').textContent = '$' + ventasTotales.toLocaleString('es-CO');
+            tablaProd.innerHTML = '';
+            
+            let prodsFiltrados = inventario.filter(p => p.nombre.toLowerCase().includes(filtro.toLowerCase()));
+            prodsFiltrados.forEach(p => {
+                tablaProd.innerHTML += `
+                    <tr>
+                        <td style="color:#666; font-size:0.8rem;">${p.id}</td>
+                        <td style="font-weight:bold;">${p.nombre}</td>
+                        <td>$${p.precio.toLocaleString('es-CO')}</td>
+                        <td>
+                            <div style="display: flex; gap: 8px;">
+                                <button style="background-color: #072e58; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'" onclick="verDetalleProducto('${p.id}')">👁️ Ver</button>
+                                <button style="background-color: #d90429; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'" onclick="banearProducto('${p.id}')">🚫 Banear</button>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+
+            // 2. CARGAR USUARIOS
+            const usuarios = Array.isArray(usuariosAdminDemo) ? usuariosAdminDemo : [];
+            document.getElementById('admin-users-count').textContent = usuarios.length;
+            const tablaUsr = document.querySelector('#tabla-admin-users tbody');
+            tablaUsr.innerHTML = '';
+            
+            usuarios.forEach(u => {
+                let badgeEstado = u.estado === 'activo' ? '<span style="color:green; font-weight:bold;">🟢 Activo</span>' : '<span style="color:red; font-weight:bold;">🔴 Suspendido</span>';
+                let btnAccion = u.estado === 'activo' 
+                    ? `<button class="btn-eliminar" onclick="cambiarEstadoUsuario('${u.id}', 'suspendido')">Suspender</button>`
+                    : `<button class="botonaccion" style="background:green;" onclick="cambiarEstadoUsuario('${u.id}', 'activo')">Restaurar</button>`;
+
+                tablaUsr.innerHTML += `
+                    <tr>
+                        <td style="font-weight:bold;">${u.nombre}</td>
+                        <td style="text-transform: capitalize;">${u.rol}</td>
+                        <td>${badgeEstado}</td>
+                        <td>${btnAccion}</td>
+                    </tr>`;
+            });
+
+            // 3. CARGAR RESEÑAS DE LA APP
+            const reseñasApp = FeriApp.safeParse(localStorage.getItem('feriapp_ratings'), []);
+            const contReseñas = document.getElementById('lista-resenas-app');
+            contReseñas.innerHTML = reseñasApp.length === 0 ? "<p>No hay reseñas todavía.</p>" : "";
+            
+            let sumaNotas = 0;
+            reseñasApp.forEach(r => {
+                sumaNotas += r.nota;
+                let estrellas = "⭐".repeat(r.nota);
+                contReseñas.innerHTML += `
+                    <div style="background:#f9f9f9; padding:15px; border-radius:4px; margin-bottom:10px; border-left: 4px solid #bc6c25;">
+                        <h4 style="margin-bottom:5px;">${r.user} <span style="font-weight:normal; color:#666; font-size:0.8rem;">(${r.fecha})</span></h4>
+                        <p style="color:#ffb703; margin-bottom:5px;">${estrellas}</p>
+                        <p style="color:#333; font-size:0.9rem;">"${r.comentario}"</p>
+                    </div>`;
+            });
+
+            if (reseñasApp.length > 0) {
+                let prom = (sumaNotas / reseñasApp.length).toFixed(1);
+                document.getElementById('admin-nota').textContent = prom + " ⭐";
+            }
+        }
+
+      // Función para ver los detalles del producto en el panel Admin (MINI CARTA VISUAL)
+        window.verDetalleProducto = function(id) {
+            let inv = FeriApp.safeParse(localStorage.getItem('catalogo_v3'), []);
+            let producto = inv.find(p => p.id === id);
+            
+            if(!producto) {
+                alert("Error: Producto no encontrado.");
+                return;
+            }
+
+            // 1. Crear el fondo del modal si no existe en el HTML
+            let modalCarta = document.getElementById('modal-minicarta-admin');
+            if (!modalCarta) {
+                modalCarta = document.createElement('div');
+                modalCarta.id = 'modal-minicarta-admin';
+                modalCarta.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(7, 46, 88, 0.7); display:flex; justify-content:center; align-items:center; z-index:9999;';
+                document.body.appendChild(modalCarta);
+            }
+
+            // 2. Determinar si tiene foto real o usamos el icono por defecto
+            let htmlVisual = producto.imagen 
+                ? `<img src="${producto.imagen}" style="width:100%; height:180px; object-fit:cover; border-radius:12px 12px 0 0;">` 
+                : `<div style="width:100%; height:180px; background:#f4f6f8; display:flex; justify-content:center; align-items:center; font-size:5rem; border-radius:12px 12px 0 0;">${producto.icono || '📦'}</div>`;
+
+            // 3. Simular reseñas para mantener el aspecto de tienda
+            let numResenas = Math.floor(Math.random() * 40) + 12; // Número aleatorio de reseñas
+
+            // 4. Inyectar el diseño de la Mini Carta
+            modalCarta.innerHTML = `
+                <div style="background:white; width:340px; border-radius:12px; box-shadow:0 15px 30px rgba(0,0,0,0.3); position:relative; text-align:left; animation: fadeIn 0.3s ease-out;">
+                    <!-- Botón Cerrar -->
+                    <span onclick="document.getElementById('modal-minicarta-admin').style.display='none'" style="position:absolute; top:10px; right:10px; font-size:1.5rem; cursor:pointer; color:#333; background:rgba(255,255,255,0.9); border-radius:50%; width:32px; height:32px; display:flex; justify-content:center; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.2); z-index:10;">&times;</span>
+                    
+                    ${htmlVisual}
+                    
+                    <div style="padding: 20px;">
+                        <span style="background:#fb6e0b; color:white; padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px;">${producto.categoria}</span>
+                        
+                        <h3 style="color:#072e58; margin:12px 0 5px 0; font-size:1.4rem;">${producto.nombre}</h3>
+                        
+                        <p style="color:#ffb703; font-size:0.95rem; margin-bottom:12px;">⭐⭐⭐⭐⭐ <span style="color:#666; font-size:0.85rem;">(${numResenas} reseñas)</span></p>
+                        
+                        <p style="color:#555; font-size:0.9rem; margin-bottom:20px; line-height:1.5; height:60px; overflow-y:auto; padding-right:5px;">${producto.desc}</p>
+                        
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #eee; padding-top:15px;">
+                            <span style="font-size:1.4rem; font-weight:bold; color:#34833c;">$${producto.precio.toLocaleString('es-CO')}</span>
+                            <span style="color:#999; font-size:0.8rem; font-weight:bold;">ID: ${producto.id}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modalCarta.style.display = 'flex';
+        };
+
+        window.banearProducto = function(id) {
+            const inventario = FeriApp.safeParse(localStorage.getItem('catalogo_v3'), []);
+            const producto = inventario.find((item) => item.id === id);
+            if (!producto) {
+                alert('Producto no encontrado.', true);
+                return;
+            }
+
+            if (!confirm(`¿Deseas retirar "${producto.nombre}" del catálogo?`)) return;
+
+            const nuevoInventario = inventario.filter((item) => item.id !== id);
+            localStorage.setItem('catalogo_v3', JSON.stringify(nuevoInventario));
+            alert('Producto retirado del catálogo.');
+            cargarAdmin(document.getElementById('admin-buscar').value);
+        };
+
+        window.cambiarEstadoUsuario = function(id, nuevoEstado) {
+            const i = usuariosAdminDemo.findIndex(u => u.id === id);
+            if (i !== -1) {
+                usuariosAdminDemo[i].estado = nuevoEstado;
+                cargarAdmin();
+            }
+        };
+
+        document.getElementById('admin-buscar').addEventListener('input', (e) => cargarAdmin(e.target.value));
+        cargarAdmin();
+    </script>
+</body>
+</html>

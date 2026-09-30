@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Contacto - Feriapp</title>
+    <link rel="stylesheet" href="../css/principal.css">
+</head>
+<body>
+    <div class="contenedorinterno">
+        <a href="principal.html" style="color: #bc6c25; font-weight: bold; text-decoration: none;">&larr; volver</a>
+        <div class="layoutpanel" style="margin-top: 30px;">
+            <section class="contenidopanel">
+                <h2>envíanos un mensaje</h2>
+                <div class="forminterno">
+                    <label>nombre</label><input type="text" id="c-nom">
+                    <label>mensaje</label><textarea id="c-msj" style="height:120px;"></textarea>
+                    <button id="btn-contacto" class="botonaccion" style="margin-top:20px;">enviar mensaje</button>
+                </div>
+            </section>
+        </div>
+    </div>
+    <script src="../js/principal.js"></script>
+    <script>
+        document.getElementById('btn-contacto').addEventListener('click', () => {
+            if(document.getElementById('c-msj').value.trim() === "") alert("escribe un mensaje.", true);
+            else { alert("¡mensaje enviado!"); document.getElementById('c-msj').value = ""; document.getElementById('c-nom').value = ""; }
+        });
+    </script>
+</body>
+</html>

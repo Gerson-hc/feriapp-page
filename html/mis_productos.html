@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Productos - Feriapp</title>
+    <link rel="stylesheet" href="../css/principal.css">
+</head>
+<body>
+    <div class="contenedorinterno">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1 class="titulointerno">gestión de inventario</h1>
+            <a href="principal.html" class="botonaccion">volver al catálogo</a>
+        </div>
+
+        <div class="layoutpanel">
+            <section class="contenidopanel" style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <h2>tus productos publicados</h2>
+                        <p style="color: #666; font-size: 0.9rem;">Administra precios y lee las opiniones de tus clientes.</p>
+                    </div>
+                    <!-- Barra de búsqueda del vendedor -->
+                    <input type="text" id="vendedor-buscar" placeholder="🔍 Buscar mi producto..." style="padding: 10px; border-radius: 20px; border: 1px solid #ccc; outline: none; width: 250px;">
+                </div>
+                
+                <table class="tabladatos" id="tablavendedor">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+
+    <!-- MODAL: VER OPINIONES Y DETALLES -->
+    <div id="modal-ver" class="fondomodal">
+        <div class="cajamodal" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
+            <span class="cerrarmodal" onclick="document.getElementById('modal-ver').style.display='none'">&times;</span>
+            <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px;">
+                <div id="ver-imagen" style="font-size: 4rem;">📦</div>
+                <div>
+                    <h2 id="ver-nombre" style="color: #2d5a27; margin: 0;">Nombre</h2>
+                    <p id="ver-precio" style="color: #d90429; font-weight: bold; font-size: 1.5rem; margin: 5px 0;"></p>
+                    <p id="ver-desc" style="color: #666; font-size: 0.9rem;"></p>
+                </div>
+            </div>
+            
+            <!-- Reseñas tipo Play Store -->
+            <div class="caja-opiniones">
+                <h3 style="color: #333; margin-bottom: 15px;">Calificaciones y opiniones</h3>
+                <div class="resumen-calificacion">
+                    <div>
+                        <div class="nota-promedio">4.8</div>
+                        <div class="estrellas-promedio">⭐⭐⭐⭐⭐</div>
+                        <p style="font-size: 0.8rem; color: #666; text-align: center;">24 reseñas</p>
+                    </div>
+                    <div class="barras-calificacion">
+                        <div class="fila-barra"><span>5</span><div class="barra-fondo"><div class="barra-llena" style="width: 85%;"></div></div></div>
+                        <div class="fila-barra"><span>4</span><div class="barra-fondo"><div class="barra-llena" style="width: 10%;"></div></div></div>
+                        <div class="fila-barra"><span>3</span><div class="barra-fondo"><div class="barra-llena" style="width: 5%;"></div></div></div>
+                        <div class="fila-barra"><span>2</span><div class="barra-fondo"><div class="barra-llena" style="width: 0%;"></div></div></div>
+                        <div class="fila-barra"><span>1</span><div class="barra-fondo"><div class="barra-llena" style="width: 0%;"></div></div></div>
+                    </div>
+                </div>
+                <div id="lista-comentarios">
+                    <div class="comentario-item">
+                        <h4>Cliente Satisfecho <span>⭐⭐⭐⭐⭐</span></h4>
+                        <p>Excelente calidad, el producto llegó súper fresco. Recomendado.</p>
+                    </div>
+                    <div class="comentario-item">
+                        <h4>Usuario Frecuente <span>⭐⭐⭐⭐</span></h4>
+                        <p>Muy bueno, aunque el empaque podría mejorar un poco.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/principal.js"></script>
+    <script>
+        function cargarMisProductos(filtro = '') {
+            const inventario = FeriApp.safeParse(localStorage.getItem('catalogo_v3'), []);
+            const tabla = document.querySelector('#tablavendedor tbody');
+            tabla.innerHTML = '';
+
+            let misProductos = inventario.filter(p => p.nombre.toLowerCase().includes(filtro.toLowerCase()));
+
+            if(misProductos.length === 0) {
+                tabla.innerHTML = `<tr><td colspan='4' style='text-align:center;'>No se encontraron productos.</td></tr>`;
+                return;
+            }
+
+            misProductos.forEach(p => {
+                let imgHtml = p.imagen ? `<img src="${p.imagen}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; vertical-align:middle;">` : p.icono;
+                tabla.innerHTML += `
+                    <tr>
+                        <td style="font-weight:bold; color:#2d5a27;">${imgHtml} ${p.nombre}</td>
+                        <td>${p.categoria}</td>
+                        <td>$${p.precio.toLocaleString('es-CO')}</td>
+                        <td style="display: flex; gap: 10px;">
+                            <button class="botonaccion" style="padding: 5px 10px;" onclick="verProducto('${p.id}')">👁️ Ver</button>
+                           <button class="btn-editar" onclick="cambiarPrecio('${p.id}')">✏️ Precio</button>
+                            <button class="btn-eliminar" onclick="eliminarProducto('${p.id}')">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        document.getElementById('vendedor-buscar').addEventListener('input', (e) => cargarMisProductos(e.target.value));
+
+        window.verProducto = function(id) {
+            const inventario = FeriApp.safeParse(localStorage.getItem('catalogo_v3'), []);
+            const p = inventario.find(x => x.id === id);
+            if (p) {
+                document.getElementById('ver-imagen').innerHTML = p.imagen ? `<img src="${p.imagen}" style="width:100px; height:100px; border-radius:10px; object-fit:cover;">` : p.icono;
+                document.getElementById('ver-nombre').textContent = p.nombre;
+                document.getElementById('ver-precio').textContent = "$" + p.precio.toLocaleString('es-CO');
+                document.getElementById('ver-desc').textContent = p.desc;
+                document.getElementById('modal-ver').style.display = 'flex';
+            }
+        };
+
+        cargarMisProductos();
+    </script>
+</body>
+</html>

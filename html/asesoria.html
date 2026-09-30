@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Asesoría - Feriapp</title>
+    <link rel="stylesheet" href="../css/principal.css">
+</head>
+<body>
+    <div class="contenedorinterno">
+        <a href="principal.html" style="color: #bc6c25; font-weight: bold; text-decoration: none;">&larr; volver</a>
+        <div style="background:#2d5a27; color:white; padding:40px; text-align:center; border-radius:8px; margin:20px 0;">
+            <h1>asesoría agrícola</h1><p>expertos listos para potenciar tu producción.</p>
+        </div>
+        <div class="layoutpanel">
+            <section class="contenidopanel">
+                <h2>solicitar visita técnica</h2>
+                <div class="forminterno">
+                    <label>servicio requerido</label>
+                    <select id="sel-serv"><option>análisis de suelos</option><option>sistemas de riego</option><option>control de plagas</option></select>
+                    <label>fecha sugerida</label>
+                    <input type="date" id="inp-fecha">
+                    <button id="btn-agendar" class="botonaccion" style="margin-top:20px;">agendar cita</button>
+                </div>
+            </section>
+        </div>
+    </div>
+    <script src="../js/principal.js"></script>
+    <script>
+        const hoy = new Date().toISOString().split('T')[0];
+        document.getElementById('inp-fecha').setAttribute('min', hoy);
+        document.getElementById('btn-agendar').addEventListener('click', () => {
+            const fecha = document.getElementById('inp-fecha').value;
+            if(!fecha) alert("selecciona una fecha.", true);
+            else if(fecha < hoy) alert("no puedes agendar en el pasado.", true);
+            else { alert(`cita de ${document.getElementById('sel-serv').value} agendada para el ${fecha}.`); document.getElementById('inp-fecha').value = ""; }
+        });
+    </script>
+</body>
+</html>

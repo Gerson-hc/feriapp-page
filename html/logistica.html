@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Logística - Feriapp</title>
+    <link rel="stylesheet" href="../css/principal.css">
+</head>
+<body>
+    <div class="contenedorinterno">
+        <a href="principal.html" style="color: #bc6c25; font-weight: bold; text-decoration: none;">&larr; volver</a>
+        <div style="background:#bc6c25; color:white; padding:40px; text-align:center; border-radius:8px; margin:20px 0;">
+            <h1>logística y envíos</h1><p>transporte pesado y seguro de carga.</p>
+        </div>
+        <div class="layoutpanel">
+            <section class="contenidopanel">
+                <h2>cotizar flete</h2>
+                <div class="forminterno">
+                    <label>origen</label><input type="text" id="origen" placeholder="ciudad">
+                    <label>destino</label><input type="text" id="destino" placeholder="ciudad">
+                    <label>peso (kg)</label><input type="number" id="peso" min="0">
+                    <button id="btn-cotizar" class="botonaccion" style="margin-top:20px;">calcular tarifa</button>
+                </div>
+            </section>
+        </div>
+    </div>
+    <script src="../js/principal.js"></script>
+    <script>
+        document.getElementById('btn-cotizar').addEventListener('click', () => {
+            const o = document.getElementById('origen').value.trim();
+            const d = document.getElementById('destino').value.trim();
+            const p = document.getElementById('peso').value;
+            if(o && d && p) alert(`cotización: el flete de ${p}kg hacia ${d} cuesta aprox. $120.000 COP.`);
+            else alert("completa origen, destino y peso.", true);
+        });
+    </script>
+</body>
+</html>

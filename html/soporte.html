@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Soporte - Feriapp</title>
+    <link rel="stylesheet" href="../css/principal.css">
+</head>
+<body>
+    <div class="contenedorinterno">
+        <a href="principal.html" style="color: #bc6c25; font-weight: bold; text-decoration: none;">&larr; volver</a>
+        <div class="layoutpanel" style="margin-top: 30px;">
+            <aside class="barralateral">
+                <h3 style="color:#2d5a27;">categorías</h3>
+                <a href="#" class="opc-soporte activo" data-tit="pagos">pagos retenidos</a>
+                <a href="#" class="opc-soporte" data-tit="bugs">reportar error (bug)</a>
+            </aside>
+            <section class="contenidopanel">
+                <h2 id="tit-soporte">pagos retenidos</h2>
+                <div class="forminterno">
+                    <label>detalles del problema</label>
+                    <textarea id="desc-soporte" style="height:120px;"></textarea>
+                    <button id="btn-soporte" class="botonaccion" style="margin-top:20px;">abrir ticket</button>
+                </div>
+            </section>
+        </div>
+    </div>
+    <script src="../js/principal.js"></script>
+    <script>
+        document.querySelectorAll('.opc-soporte').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.opc-soporte').forEach(b => b.classList.remove('activo'));
+                this.classList.add('activo');
+                document.getElementById('tit-soporte').textContent = this.textContent;
+            });
+        });
+        document.getElementById('btn-soporte').addEventListener('click', () => {
+            if(document.getElementById('desc-soporte').value.trim() === "") alert("describe el problema.", true);
+            else { alert("ticket creado. soporte técnico te contactará pronto."); document.getElementById('desc-soporte').value = ""; }
+        });
+    </script>
+</body>
+</html>

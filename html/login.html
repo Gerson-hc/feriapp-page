@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión - Feriapp</title>
+    <link rel="stylesheet" href="../css/autenticacion.css">
+</head>
+<body>
+    <div class="contenedor-auth">
+        <a href="#" class="logo-auth">feriapp</a>
+        <h2 style="color:#333; margin-bottom:20px;">bienvenido de vuelta</h2>
+        
+        <form class="form-auth" novalidate>
+            <label>nombre o usuario</label>
+            <input type="text" id="inp-nombre" placeholder="ej: Juan Pérez" autocomplete="username">
+            <p id="err-nombre" class="error-inline" style="display:none; color:#d90429; font-size:0.85rem; margin-top:-10px; margin-bottom:15px; font-weight:bold;"></p>
+
+            <label>correo electrónico</label>
+            <input type="email" id="inp-correo" placeholder="ejemplo@correo.com" autocomplete="email">
+            <p id="err-correo" class="error-inline" style="display:none; color:#d90429; font-size:0.85rem; margin-top:-10px; margin-bottom:15px; font-weight:bold;"></p>
+
+          <label>contraseña</label>
+            <div style="position: relative; width: 100%;">
+                <input type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password" style="padding-right: 40px; width: 100%; box-sizing: border-box;">
+                <!-- Agregamos onclick="togglePassword()" y z-index para garantizar que sea clickeable -->
+                <button type="button" id="btn-ojo-pass" aria-label="Mostrar contraseña" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.2rem; user-select: none; z-index: 10; border:0; background:transparent; padding:6px;">👁️</button>
+            </div>
+         <p id="err-pass" class="error-inline" style="display:none; color:#d90429; font-size:0.85rem; margin-top:5px; margin-bottom:15px; font-weight:bold;"></p>
+
+            <label>ingresar a la plataforma como:</label>
+            <select id="inp-rol">
+                <option value="comprador">cliente / comprador</option>
+                <option value="vendedor">productor / vendedor</option>
+                <option value="admin">superadministrador</option>
+            </select>
+
+            <p id="msg-error" class="error-auth"></p>
+           <button type="submit" id="btn-accion-auth" class="btn-auth">iniciar sesión</button>
+        </form>
+
+        <div class="enlaces-auth">
+            <p><a href="recuperacion.html">¿olvidaste tu contraseña?</a></p>
+            <p style="margin-top:10px;">¿no tienes cuenta? <a href="registro.html">regístrate</a></p>
+            <p style="margin-top:10px;"><a href="principal.html">continuar como visitante</a></p>
+        </div>
+    </div>
+    
+    <!-- El script que ya tienes está configurado para leer estos nuevos campos -->
+    <script src="../js/autenticacion.js"></script>
+</body>
+</html>

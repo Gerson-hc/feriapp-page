@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro - Feriapp</title>
+    <link rel="stylesheet" href="../css/autenticacion.css">
+</head>
+<body>
+    <div class="contenedor-auth">
+        <a href="login.html" class="logo-auth">feriapp</a>
+        <h2 style="color:#333; margin-bottom:5px;">crear cuenta nueva</h2>
+        <p style="color:#666; font-size:0.9rem; margin-bottom:20px;">únete a feriapp</p>
+        
+        <form class="form-auth" novalidate>
+            <label>¿cómo te registrarás?</label>
+            <select id="inp-rol">
+                <option value="comprador">cliente / comprador</option>
+                <option value="vendedor">productor / vendedor</option>
+            </select>
+
+            <label>nombres completos</label>
+         <input type="text" id="inp-nombre" placeholder="ej: Juan Pérez" autocomplete="name">
+            <p id="err-nombre" class="error-inline" style="display:none; color:#d90429; font-size:0.85rem; margin-top:-10px; margin-bottom:15px; font-weight:bold;"></p>
+ 
+           
+           <!-- CORRECCIÓN 1: Quitar la ruedita del documento -->
+            <label>número de documento (5 a 10 dígitos)</label>
+                <!-- Usamos type="text" y inputmode="numeric" para que abra teclado numérico en celulares SIN mostrar la ruedita en PC -->
+                <input type="text" inputmode="numeric" pattern="[0-9]*" id="inp-documento" placeholder="ej. 1023456789" autocomplete="off">
+                <p id="err-documento" class="error-inline" style="display:none; color:#d90429; font-size:0.85rem; margin-top:-10px; margin-bottom:15px; font-weight:bold;"></p>
+           
+            <label>fecha de nacimiento</label>
+            <input type="date" id="inp-fecha">
+            <p id="err-fecha" class="error-inline" style="display:none; color:#d90429; font-size:0.85rem; margin-top:-10px; margin-bottom:15px; font-weight:bold;"></p>
+
+            <label>correo electrónico</label>
+            <input type="email" id="inp-correo" placeholder="ejemplo@correo.com" autocomplete="email">
+            <p id="err-correo" class="error-inline" style="display:none; color:#d90429; font-size:0.85rem; margin-top:-10px; margin-bottom:15px; font-weight:bold;"></p>
+
+                <label>crear contraseña</label>
+            <div style="position: relative; width: 100%;">
+                <input type="password" id="inp-pass" placeholder="••••••••" autocomplete="new-password" style="padding-right: 40px; width: 100%; box-sizing: border-box;">
+                 <!-- Agregamos onclick="togglePassword()" y z-index para garantizar que sea clickeable -->
+                <button type="button" id="btn-ojo-pass" aria-label="Mostrar contraseña" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.2rem; user-select: none; z-index: 10; border:0; background:transparent; padding:6px;">👁️</button>
+            </div>
+            <p id="err-pass" class="error-inline" style="display:none; color:#d90429; font-size:0.85rem; margin-top:5px; margin-bottom:15px; font-weight:bold;"></p>
+
+            <p id="msg-error" class="error-auth"></p>
+            <button type="submit" id="btn-accion-auth" class="btn-auth">completar registro</button>
+        </form>
+
+        <div class="enlaces-auth">
+            <p style="margin-top:10px;"><a href="login.html">¿ya tienes cuenta? inicia sesión aquí</a></p>
+        </div>
+    </div>
+    <script src="../js/autenticacion.js"></script>
+</body>
+</html>

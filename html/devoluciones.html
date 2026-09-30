@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Devoluciones - Feriapp</title>
+    <link rel="stylesheet" href="../css/principal.css">
+</head>
+<body>
+    <div class="contenedorinterno">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1 class="titulointerno">gestión de devoluciones</h1>
+            <a href="principal.html" class="botonaccion">volver al catálogo</a>
+        </div>
+
+        <div class="layoutpanel">
+            <aside class="barralateral">
+                <a href="perfil.html">editar perfil</a>
+                <a href="pedidos.html">mis compras</a>
+                <a href="devoluciones.html" class="activo">devoluciones</a>
+            </aside>
+
+            <section class="contenidopanel">
+                <h2>radicar solicitud</h2>
+                <div class="forminterno">
+                    <label>ID de la orden</label>
+                    <input type="text" id="idorden" placeholder="ej. FA-4509">
+                    <label>motivo</label>
+                    <select id="motivodevolucion">
+                        <option>producto en mal estado</option>
+                        <option>no coincide con la foto</option>
+                        <option>faltaron productos</option>
+                    </select>
+                    <label>detalles</label>
+                    <textarea id="detallesdevolucion" style="height:80px;"></textarea>
+                    <button id="enviardevolucion" class="botonaccion" style="margin-top:15px;">enviar</button>
+                </div>
+
+                <hr style="margin: 40px 0; border-top: 2px dashed #ccc;">
+                <h2>historial de devoluciones</h2>
+                <div id="listadevoluciones" style="margin-top:20px;"></div>
+            </section>
+        </div>
+    </div>
+    
+    <script src="../js/principal.js"></script>
+    <script>
+        function renderizar() {
+            const hist = FeriApp.getOrders();
+            const devols = hist.filter(p => p.estado === 'en devolución');
+            const cont = document.getElementById('listadevoluciones');
+            cont.innerHTML = devols.length === 0 ? "<p style='color:#666;'>sin devoluciones activas.</p>" : "";
+            
+            devols.forEach(p => {
+                cont.innerHTML += `
+                <div class="tarjetapedido" style="border-left-color:#d90429;">
+                    <div>
+                        <h3 style="color:#d90429;">Orden #${p.id}</h3>
+                        <p style="font-size:0.85rem; color:#666;">radicado: ${p.fechadevolucion}</p>
+                        <p style="margin-top:5px;"><strong>motivo:</strong> ${p.motivodevolucion}</p>
+                    </div>
+                </div>`;
+            });
+        }
+
+        const ord = localStorage.getItem('ordendevolucion');
+        if (ord) { document.getElementById('idorden').value = ord; localStorage.removeItem('ordendevolucion'); }
+        renderizar();
+
+        document.getElementById('enviardevolucion').addEventListener('click', () => {
+            const id = document.getElementById('idorden').value.trim();
+            const motivo = document.getElementById('motivodevolucion').value;
+            const det = document.getElementById('detallesdevolucion').value.trim();
+            
+            if (!id || !det) { alert("llena todos los campos.", true); return; }
+
+            let hist = FeriApp.getOrders();
+            let i = hist.findIndex(p => p.id === id);
+
+            if (i === -1) alert("ID de orden no existe.", true);
+            else if (hist[i].estado === 'en devolución') alert("orden ya en proceso.", true);
+            else {
+                hist[i].estado = 'en devolución';
+                hist[i].fechadevolucion = new Date().toLocaleString('es-CO');
+                hist[i].motivodevolucion = motivo + " - " + det;
+                FeriApp.setOrders(hist);
+                alert("radicado exitosamente.");
+                document.getElementById('idorden').value = "";
+                document.getElementById('detallesdevolucion').value = "";
+                renderizar();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil - Feriapp</title>
+    <link rel="stylesheet" href="../css/principal.css">
+</head>
+<body>
+    <div class="contenedorinterno">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1 class="titulointerno">panel de control</h1>
+            <a href="principal.html" class="botonaccion">volver al catálogo</a>
+        </div>
+        <div class="layoutpanel">
+            <aside class="barralateral">
+                <img id="imgperfil" src="https://via.placeholder.com/100" alt="Avatar">
+                <h3 id="nombrelateral">cargando...</h3>
+                <a href="perfil.html" class="activo">editar perfil</a>
+                <a href="pedidos.html">mis compras</a>
+                <a href="devoluciones.html">devoluciones</a>
+            </aside>
+            <section class="contenidopanel">
+                <h2>información pública</h2>
+                <div class="forminterno">
+                    <label>foto de perfil</label>
+                    <input type="file" id="inp-foto" accept="image/*" style="border:none; padding:0;">
+                    <label>nombre mostrado</label>
+                    <input type="text" id="inp-nombre">
+                    <label>biografía</label>
+                    <textarea id="inp-bio" style="height: 100px;"></textarea>
+                    <button id="btnguardar" class="botonaccion" style="margin-top: 20px;">guardar cambios</button>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <script src="../js/principal.js"></script>
+    <script>
+        const sesion = FeriApp.getSession();
+        const nom = sesion ? sesion.name : 'usuario';
+        const fot = localStorage.getItem('fotoferiapp');
+        const bio = localStorage.getItem('bioferiapp');
+
+        document.getElementById('nombrelateral').textContent = nom;
+        document.getElementById('inp-nombre').value = nom;
+        if(fot) document.getElementById('imgperfil').src = fot;
+        if(bio) document.getElementById('inp-bio').value = bio;
+
+        document.getElementById('inp-foto').addEventListener('change', e => {
+            const arch = e.target.files[0];
+            if(arch) {
+                const lec = new FileReader();
+                lec.onload = ev => {
+                    document.getElementById('imgperfil').src = ev.target.result;
+                    localStorage.setItem('fotoferiapp', ev.target.result);
+                };
+                lec.readAsDataURL(arch);
+            }
+        });
+
+        document.getElementById('btnguardar').addEventListener('click', () => {
+            const nuevonom = document.getElementById('inp-nombre').value.trim();
+            if(nuevonom) {
+                localStorage.setItem('nombreferiapp', nuevonom);
+                localStorage.setItem('usuario_nombre', nuevonom);
+                localStorage.setItem('bioferiapp', document.getElementById('inp-bio').value.trim());
+
+                const usuarios = FeriApp.safeParse(localStorage.getItem('feriapp_usuarios_bd'), []);
+                const idActual = localStorage.getItem('usuario_id');
+                const idx = Array.isArray(usuarios) ? usuarios.findIndex(u => u.id === idActual) : -1;
+                if (idx !== -1) {
+                    usuarios[idx].nombre = nuevonom;
+                    localStorage.setItem('feriapp_usuarios_bd', JSON.stringify(usuarios));
+                }
+                document.getElementById('nombrelateral').textContent = nuevonom;
+                alert("¡perfil actualizado correctamente!");
+            } else { alert("el nombre no puede estar vacío.", true); }
+        });
+    </script>
+</body>
+</html>

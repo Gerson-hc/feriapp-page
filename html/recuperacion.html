@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Recuperar - Feriapp</title>
+    <link rel="stylesheet" href="../css/autenticacion.css">
+</head>
+<body>
+    <div class="contenedor-auth">
+        <a href="#" class="logo-auth">feriapp</a>
+        <h2 style="color:#333; margin-bottom:10px;">recupera tu acceso</h2>
+        <p style="color:#666; font-size:0.9rem; margin-bottom:20px;">ingresa tu correo y te enviaremos un enlace.</p>
+        <form class="form-auth" id="form-recuperacion" novalidate>
+            <label>correo electrónico</label>
+            <input type="email" id="inp-correo" placeholder="ejemplo@correo.com">
+            <p id="msg-error" class="error-auth"></p>
+            <button id="btn-accion-auth" class="btn-auth" style="background:#2d5a27;">enviar enlace</button>
+        </form>
+        <div class="enlaces-auth">
+            <p style="margin-top:10px;"><a href="login.html">&larr; volver al login</a></p>
+        </div>
+    </div>
+<script>
+    document.getElementById('form-recuperacion').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('inp-correo').value.trim();
+        const msg = document.getElementById('msg-error');
+        const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+
+        if (email === "") {
+            msg.textContent = "⚠️ Ingresa tu correo electrónico.";
+            msg.style.cssText = "display:block; color:white; background:#d90429; padding:10px; border-radius:6px; font-weight:bold; margin-bottom:15px;";
+        } else if (!regexCorreo.test(email)) {
+            msg.textContent = "⚠️ Ingresa un formato de correo válido.";
+            msg.style.cssText = "display:block; color:white; background:#d90429; padding:10px; border-radius:6px; font-weight:bold; margin-bottom:15px;";
+        } else {
+            msg.style.display = "none";
+            alert("Enlace de recuperación enviado a " + email);
+        }
+    });
+</script>
+</body>
+</html>

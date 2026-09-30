@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Carrito - Feriapp</title>
+    <link rel="stylesheet" href="../css/principal.css">
+</head>
+<body>
+    <div class="contenedorinterno">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1 class="titulointerno">tu carrito de compras</h1>
+            <a href="principal.html" class="botonaccion">seguir comprando</a>
+        </div>
+        <div class="layoutpanel">
+            <section class="contenidopanel" style="flex: 2;">
+                <h2>productos seleccionados</h2>
+                <div id="listacarrito" style="margin-top: 20px;"></div>
+            </section>
+            <aside class="barralateral" style="flex: 1;">
+                <h3 style="color: #2d5a27;">resumen de orden</h3>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 1.2rem;">
+                    <span>total a pagar:</span><strong id="totalcarrito" style="color: #d90429;">$0</strong>
+                </div>
+                <button id="finalizarcompra" class="botonaccion" style="width: 100%;">finalizar compra</button>
+            </aside>
+        </div>
+    </div>
+    
+    <script src="../js/principal.js"></script>
+    <script>
+        function renderizarCarrito() {
+            const carrito = FeriApp.getCart();
+            const lista = document.getElementById('listacarrito');
+            let total = 0;
+            lista.innerHTML = "";
+            if (carrito.length === 0) {
+                lista.innerHTML = "<p style='color:#666;'>tu carrito está vacío.</p>";
+            } else {
+                carrito.forEach((item, index) => {
+                    total += item.precio;
+                    lista.innerHTML += `
+                        <div style="background:white; padding:15px; border-radius:4px; border-left:5px solid #2d5a27; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+                            <div><h4>${item.nombre}</h4><p style="color:#bc6c25; font-weight:bold;">$${item.precio.toLocaleString('es-CO')}</p></div>
+                            <button onclick="eliminar(${index})" style="background:#d90429; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">X</button>
+                        </div>`;
+                });
+            }
+            document.getElementById('totalcarrito').textContent = "$" + total.toLocaleString('es-CO');
+        }
+
+        window.eliminar = function(i) {
+            let carrito = FeriApp.getCart();
+            carrito.splice(i, 1);
+            FeriApp.setCart(carrito);
+            renderizarCarrito();
+            if(typeof actualizarContadorCarrito === 'function') actualizarContadorCarrito();
+        };
+
+        document.getElementById('finalizarcompra').addEventListener('click', () => {
+            if (!FeriApp.requireAuth('carrito.html', 'checkout')) return;
+            const carrito = FeriApp.getCart();
+            if (carrito.length === 0) { alert("no tienes productos.", true); return; }
+            
+            const fechahora = new Date().toLocaleString('es-CO');
+            const idorden = "FA-" + Math.floor(Math.random() * 90000 + 10000);
+            let total = 0; carrito.forEach(i => total += i.precio);
+
+            const hist = FeriApp.getOrders();
+            hist.unshift({ id: idorden, fecha: fechahora, items: carrito.length, total: total, estado: 'en camino' });
+            FeriApp.setOrders(hist);
+
+            alert(`¡pago exitoso! pedido ${idorden} procesado.`);
+            FeriApp.setCart([]);
+            renderizarCarrito();
+            if(typeof actualizarContadorCarrito === 'function') actualizarContadorCarrito();
+            setTimeout(() => window.location.href = "pedidos.html", 2500);
+        });
+        renderizarCarrito();
+    </script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feriapp - Catálogo Principal</title>
+    <link rel="stylesheet" href="../css/principal.css">
+</head>
+<body>
+
+ <header class="encabezado">
+        <a href="principal.html" class="enlacelogo">
+            <img src="/Imagenes/3d.jpg" alt="Feriapp" style="height: 100px; width: auto; display: block;">
+        </a>
+
+        <nav class="navegacion">
+            <div class="menudesplegable">
+                <span class="enlacenav">nuestros servicios ▼</span>
+                <div class="contenidodesplegable">
+                    <a href="asesoria.html">asesoría agrícola</a>
+                    <a href="logistica.html">logística y envíos</a>
+                    <a href="soporte.html">atención al feriante</a>
+                </div>
+            </div>
+            <a href="#seccioncatalogo" class="enlacenav">catálogo</a>
+            <a href="contacto.html" class="enlacenav">contacto</a>
+        </nav>
+        <div class="contenedornaviconos">
+            <a href="carrito.html" class="botonperfil">
+                🛒<span id="contadorcarrito" class="contadorcarrito" style="display: none;">0</span>
+            </a>
+            <div class="contenedorperfil">
+                <button id="botonperfil" class="botonperfil">👤</button>
+                <div id="menuperfil" class="menuperfil">
+                    <p><strong id="textobienvenida">cargando...</strong></p>
+                    <hr>
+                    <a href="perfil.html">editar perfil</a>
+                    <a href="pedidos.html">mis compras</a>
+                    <hr>
+                    <a href="#" id="botoncerrarsesion" style="color: #d90429; font-weight: bold;">cerrar sesión</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="seccionhero">
+    <!-- Imágenes de fondo del carrusel (pueden ser tus fotos de la carpeta Imagenes) -->
+    <div class="hero-bg activo" style="background-image: url('/Imagenes/plaza.jpg');"></div>
+    <div class="hero-bg" style="background-image: url('/Imagenes/plazafotos.jpeg');"></div>
+    <div class="hero-bg" style="background-image: url('/Imagenes/fotoplaza.jpg');"></div>
+    
+    <!-- Capa de oscurecimiento elegante para legibilidad -->
+    <div class="hero-overlay"></div>
+
+    <!-- Contenido flotante -->
+    <h1>siempre lo mejor... siempre fresco</h1>
+    <div class="cajabuscador">
+        <input type="text" id="inputbuscador" placeholder="¿qué buscas hoy? ej: manzanas, queso...">
+        <button id="botonbuscar">🔍</button>
+    </div>
+</section>
+
+    <nav class="barracategorias-circulos">
+        <div class="circulocategoria activo" data-cat="destacados">
+            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">⭐</span></div><div class="circulo-dorso"><span>destacados</span></div></div>
+        </div>
+        <div class="circulocategoria" data-cat="frutas">
+            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">🍎</span></div><div class="circulo-dorso"><span>frutas y verduras</span></div></div>
+        </div>
+        <div class="circulocategoria" data-cat="flores">
+            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">🌹</span></div><div class="circulo-dorso"><span>flores y artesanías</span></div></div>
+        </div>
+        <div class="circulocategoria" data-cat="carnicos">
+            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">🥩</span></div><div class="circulo-dorso"><span>cárnicos</span></div></div>
+        </div>
+        <div class="circulocategoria" data-cat="lacteos">
+            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">🧀</span></div><div class="circulo-dorso"><span>lácteos</span></div></div>
+        </div>
+        <div class="circulocategoria" data-cat="todos">
+            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">📦</span></div><div class="circulo-dorso"><span>todos los productos</span></div></div>
+        </div>
+    </nav>
+
+    <div id="cajafiltros" class="cajafiltros">
+        <select id="filtroorden" class="filtroselect">
+            <option value="defecto">filtrar por...</option>
+            <option value="az">nombre: a - z</option>
+            <option value="za">nombre: z - a</option>
+            <option value="minmax">precio: menor a mayor</option>
+            <option value="maxmin">precio: mayor a menor</option>
+        </select>
+    </div>
+
+    <main id="seccioncatalogo" class="seccioncatalogo">
+        <div class="cabeceracatalogo">
+            <h2 id="titulocatalogo">⭐ destacados del día</h2>
+            <button id="botonagregarprod" class="botonaccion oculto">➕ publicar producto</button>
+        </div>
+        <div id="grillaproductos" class="grillaproductos"></div>
+    </main>
+
+    <div id="modalproducto" class="fondomodal">
+        <div class="cajamodal">
+            <span id="cerrarmodal" class="cerrarmodal">&times;</span>
+            <h3 style="color:#2d5a27; margin-bottom:15px;">publicar producto</h3>
+            <label style="display:block; font-size:0.8rem; font-weight:bold; margin-bottom:5px;">imagen (obligatoria):</label>
+            <input type="file" id="modimagen" accept="image/*" style="border:none; padding:0;">
+            <input type="text" id="modnombre" placeholder="nombre del producto">
+            <select id="modcat">
+                <option value="frutas">frutas y verduras</option>
+                <option value="flores">flores y artesanías</option>
+                <option value="carnicos">cárnicos</option>
+                <option value="lacteos">lácteos</option>
+            </select>
+            <textarea id="moddesc" placeholder="descripción..." style="resize:none; height:80px;"></textarea>
+            <input type="number" id="modprecio" placeholder="precio en COP">
+            <p id="errormodal" class="errormodal"></p>
+            <button id="botonguardar" class="botonaccion" style="width: 100%;">guardar producto</button>
+        </div>
+    </div>
+
+    <script src="../js/principal.js"></script>
+</body>
+</html>

@@ -1,230 +1,306 @@
-<div align="center">
+🥕 FeriApp
 
-# 🥕 FeriApp
+Plataforma web para la gestión de productos y la venta directa en plazas de mercado
 
-### Plataforma web de gestión de inventarios y venta directa para las plazas de mercado de Bogotá
+<p align="center">
+  <img src="https://img.shields.io/badge/SENA-ADSO-39a900?style=for-the-badge" alt="SENA ADSO">
+  <img src="https://img.shields.io/badge/Metodología-Scrum-6C5CE7?style=for-the-badge" alt="Scrum">
+  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5">
+  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3">
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript">
+</p><p align="center">
+  <a href="https://gerson-hc.github.io/feriapp-page/">🌐 Ver demo</a> ·
+  <a href="../../issues">🐛 Reportar un problema</a> ·
+  <a href="../../issues">💡 Proponer una mejora</a>
+</p>---
 
-[![SENA](https://img.shields.io/badge/SENA-ADSO-39a900?style=for-the-badge)](https://www.sena.edu.co/)
-[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/es/docs/Web/HTML)
-[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/es/docs/Web/CSS)
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/es/docs/Web/JavaScript)
+📖 1. Descripción del proyecto
 
-[🌐 Ver demo en vivo](https://gerson-hc.github.io/feriapp-page/) · [🐛 Reportar problema](../../issues) · [💡 Sugerir mejora](../../issues)
+FeriApp es un proyecto de desarrollo web orientado a la digitalización del comercio en las plazas de mercado y ferias locales. Su propósito es facilitar la interacción entre vendedores y compradores mediante una plataforma digital en la que se puedan explorar productos, consultar precios y acceder a diferentes herramientas para la gestión comercial.
 
-</div>
+El proyecto se desarrolla en el marco del programa de formación Tecnología en Análisis y Desarrollo de Software (ADSO) del Servicio Nacional de Aprendizaje (SENA), aplicando conocimientos de programación web, diseño de interfaces y desarrollo frontend.
 
----
+🎯 Objetivo general
 
-## 📖 Descripción
+Desarrollar una plataforma web que contribuya a la digitalización del comercio en las plazas de mercado, facilitando la presentación de productos y la interacción entre vendedores y compradores.
 
-**FeriApp** es una plataforma web diseñada para digitalizar la operación de las plazas de mercado y ferias locales de Bogotá. Permite a los **feriantes** publicar y gestionar su inventario, y a los **compradores** explorar el catálogo, añadir productos al carrito y realizar pedidos de forma sencilla.
+🌱 Propósito
 
-Este proyecto nace como parte del programa de formación **Análisis y Desarrollo de Software (ADSO)** del **SENA**, con el objetivo de aplicar los conocimientos de desarrollo frontend en una solución real con impacto social.
-
-> 🎯 **Misión:** apoyar la economía local y a los pequeños productores, ofreciéndoles una vitrina digital accesible y moderna.
-
----
-
-## ✨ Características principales
-
-### 🛒 Para compradores
-- Catálogo interactivo con tarjetas que giran al hacer clic
-- Búsqueda en tiempo real por nombre de producto
-- Filtros por categoría (frutas, flores, cárnicos, lácteos)
-- Ordenamiento por nombre y precio (ascendente / descendente)
-- Carrito de compras con persistencia en el navegador
-- Sistema de pedidos y devoluciones
-- Calificación de la plataforma
-
-### 📦 Para vendedores
-- Publicación de productos con imagen (convertida a base64)
-- Gestión de precios en tiempo real
-- Panel de opiniones y calificaciones de clientes
-- Herramientas B2B (asesoría agrícola, logística, proveedores)
-
-### ⚙️ Para administradores
-- Dashboard con métricas (ventas totales, nota promedio, usuarios)
-- Moderación de productos (banear del catálogo)
-- Gestión de usuarios (activar / suspender)
-- Visualización de reseñas de la app
-
-### 🔐 Autenticación
-- Registro con validación en tiempo real
-- Validación de mayoría de edad
-- Validación de correo (Gmail, Yahoo, Hotmail, Outlook, Live, Empresa)
-- Redirección inteligente según el rol (comprador, vendedor, admin)
-- Rutas protegidas y sesión persistente
-
----## 🛠️ Tecnologías utilizadas
-
-| Tecnología | Uso |
-|---|---|
-| **HTML5** | Estructura semántica de las páginas |
-| **CSS3** | Diseño responsive, animaciones y tarjetas 3D |
-| **JavaScript (ES6+)** | Lógica de la app, carrito, sesión y filtros |
-| **LocalStorage** | Persistencia de datos en el navegador |
-| **GitHub Pages** | Hosting y despliegue automático |
+Promover el uso de herramientas digitales para apoyar a pequeños comerciantes y productores, ampliar la visibilidad de sus productos y explorar nuevas oportunidades de comercialización.
 
 ---
 
-## 📁 Estructura del proyecto
-```
+✨ 2. Funcionalidades principales
+
+🛒 Módulo de compradores
+
+- Visualización del catálogo de productos.
+- Búsqueda de productos por nombre.
+- Filtrado por categorías.
+- Ordenamiento por nombre y precio.
+- Carrito de compras.
+- Interfaces para consultar pedidos y gestionar devoluciones.
+- Sistema de calificación de la plataforma.
+
+📦 Módulo de vendedores
+
+- Interfaces para publicar y gestionar productos.
+- Gestión de información y precios.
+- Incorporación de imágenes de productos.
+- Visualización de opiniones y calificaciones.
+- Secciones informativas sobre asesoría agrícola, logística y proveedores.
+
+⚙️ Módulo de administración
+
+- Panel administrativo con indicadores generales.
+- Interfaz de moderación de productos.
+- Gestión de usuarios y estados de las cuentas.
+- Visualización de reseñas de la plataforma.
+
+🔐 Registro e inicio de sesión
+
+- Formularios de registro e inicio de sesión.
+- Validación de campos y formatos de correo electrónico.
+- Validación de edad durante el registro.
+- Navegación según los roles de usuario.
+- Gestión de sesión en el navegador.
+
+«Estado técnico: FeriApp cuenta con un frontend web publicado mediante GitHub Pages. La disponibilidad de las interfaces no implica que todas las operaciones estén conectadas a un backend. La autenticación segura, la sincronización de datos entre usuarios y el procesamiento de pagos requieren servicios adicionales para un entorno de producción.»
+
+---
+
+🛠️ 3. Tecnologías utilizadas
+
+Tecnología| Aplicación
+HTML5| Estructura y contenido de las páginas.
+CSS3| Estilos, diseño adaptable y animaciones.
+JavaScript (ES6+)| Lógica e interactividad del frontend.
+DOM API| Manipulación dinámica de la interfaz.
+LocalStorage| Persistencia local de datos en el navegador.
+Git| Control de versiones.
+GitHub| Alojamiento del código y colaboración.
+GitHub Pages| Despliegue de la aplicación web estática.
+
+---
+
+🔄 4. Metodología de trabajo: Scrum
+
+El equipo utiliza como referencia el marco de trabajo ágil Scrum, orientado a la colaboración, la entrega incremental de valor, la transparencia y la mejora continua.
+
+👥 Organización del equipo Scrum
+
+Integrante| Rol| Responsabilidades
+Gerson H. C.| Scrum Master| Facilitar Scrum, promover la colaboración, ayudar a eliminar impedimentos y fomentar la mejora continua.
+Heller Tobito| Product Owner| Comunicar la visión del producto, priorizar el Product Backlog y procurar que el desarrollo genere valor para los usuarios.
+Sergio Gonzales| Developer| Participar en la construcción, implementación, verificación y mejora de las funcionalidades del producto.
+
+📌 Responsabilidades de cada rol
+
+Scrum Master — Gerson H. C.
+
+- Promover la comprensión y aplicación de Scrum.
+- Facilitar los eventos de Scrum cuando corresponda.
+- Ayudar a identificar y eliminar impedimentos.
+- Fomentar la comunicación y la mejora continua del equipo.
+
+Product Owner — Heller Tobito
+
+- Definir y comunicar los objetivos del producto.
+- Gestionar y ordenar el Product Backlog.
+- Priorizar las funcionalidades según su valor.
+- Mantener claros los objetivos y las necesidades de los usuarios.
+
+Developer — Sergio Gonzales
+
+- Contribuir al desarrollo del producto.
+- Implementar y verificar funcionalidades.
+- Colaborar con los demás integrantes.
+- Procurar que el resultado cumpla los criterios de calidad acordados.
+
+Los roles representan la organización acordada por el equipo. En Scrum, los Developers pueden ser una o varias personas, y todos los integrantes colaboran para alcanzar los objetivos del producto.
+
+---
+
+📁 5. Estructura del proyecto
 
 feriapp-page/
-│
-├── index.html                # Catálogo principal (página de inicio)
-├── README.md                 # Este archivo
-│
-├── css/                      # Hojas de estilo
+├── index.html
+├── README.md
+├── LICENSE
+├── css/
 │   ├── principal.css
 │   └── autenticacion.css
-│
-├── js/                       # Lógica del cliente
-│   ├── principal.js          # Núcleo: tienda, carrito y sesión
-│   └── autenticacion.js      # Registro, login y validaciones
-│
-├── Imagenes/                 # Recursos gráficos
-│
-└── html/                     # Páginas secundarias
-├── login.html
-├── registro.html
-├── recuperacion.html
-├── carrito.html
-├── perfil.html
-├── pedidos.html
-├── devoluciones.html
-├── mis_productos.html
-├── admin.html
-├── asesoria.html
-├── logistica.html
-├── soporte.html
-├── contacto.html
-└── proveedores.html
+├── js/
+│   ├── principal.js
+│   └── autenticacion.js
+├── Imagenes/
+└── html/
+    ├── login.html
+    ├── registro.html
+    ├── recuperacion.html
+    ├── carrito.html
+    ├── perfil.html
+    ├── pedidos.html
+    ├── devoluciones.html
+    ├── mis_productos.html
+    ├── admin.html
+    ├── asesoria.html
+    ├── logistica.html
+    ├── soporte.html
+    ├── contacto.html
+    └── proveedores.html
 
-```
+Esta estructura es orientativa y debe verificarse frente a los archivos reales del repositorio.
 
 ---
 
-## 🚀 Cómo ejecutar en local
+🚀 6. Instalación y ejecución local
 
-### Opción 1: Descarga directa
-1. Descarga el repositorio como ZIP
-2. Descomprime la carpeta
-3. Abre `index.html` con doble clic en tu navegador
+Requisitos
 
-### Opción 2: Clonar con Git
-```bash
+- Un navegador web actualizado.
+- Git para clonar el repositorio.
+- Python 3 para ejecutar un servidor local, si se desea.
+
+Opción 1. Descargar el proyecto
+
+1. Abre el "repositorio de FeriApp" (https://github.com/Gerson-hc/feriapp-page).
+2. Selecciona Code → Download ZIP.
+3. Descomprime el archivo.
+4. Abre "index.html" en tu navegador.
+
+Opción 2. Clonar con Git
+
+Ejecuta los siguientes comandos en una terminal:
+
 git clone https://github.com/Gerson-hc/feriapp-page.git
 cd feriapp-page
-# Abre index.html en tu navegador
-```
 
-Opción 3: Servidor local (recomendado)
+Opción 3. Ejecutar un servidor local
 
-```bash
-# Con Python 3
-python -m http.server 8000
+Desde la carpeta raíz del proyecto, ejecuta:
 
-# O con Node.js (si tienes live-server instalado)
-npx live-server
-```
+python3 -m http.server 8000
 
-Luego abre http://localhost:8000 en tu navegador.
+Luego abre:
+
+http://localhost:8000
+
+El servidor local permite probar la aplicación y detectar posibles problemas de rutas o carga de recursos.
 
 ---
 
-🎨 Capturas de pantalla
+🖼️ 7. Capturas de pantalla
 
-<div align="center">
+Las capturas permiten mostrar el diseño y las principales interfaces de FeriApp.
 
-🏠 Página principal (catálogo)
+Vista| Archivo sugerido
+Catálogo principal| "Imagenes/catalogo.png"
+Inicio de sesión| "Imagenes/login.png"
+Carrito de compras| "Imagenes/carrito.png"
+Panel de administración| "Imagenes/admin.png"
 
-Agrega aquí una captura de la página principal
+Cuando las imágenes estén disponibles en el repositorio, puedes incorporarlas con Markdown:
 
-🔐 Inicio de sesión
+![Catálogo principal de FeriApp](Imagenes/catalogo.png)
 
-Agrega aquí una captura del login
-
-🛒 Carrito de compras
-
-Agrega aquí una captura del carrito
-
-⚙️ Panel de administrador
-
-Agrega aquí una captura del admin
-
-</div>
-
-💡 Tip: puedes subir capturas a la carpeta Imagenes/ y enlazarlas aquí.
+Utiliza capturas reales de la aplicación y verifica que las rutas y los nombres de los archivos coincidan.
 
 ---
 
-```## 🗺️ Roadmap
+🗺️ 8. Roadmap
 
-- [x] Prototipo del frontend
-- [x] Catálogo interactivo con filtros
-- [x] Carrito y gestión de pedidos
-- [x] Autenticación demo con roles
-- [x] Panel de administrador
-- [ ] Backend real (Node.js + Express)
-- [ ] Base de datos (MongoDB / MySQL)
-- [ ] Autenticación con JWT
-- [ ] Pasarela de pagos
-- [ ] Notificaciones en tiempo real
-- [ ] PWA (Progressive Web App)
-- [ ] App móvil
+Desarrollo del frontend
 
----
+- [x] Estructura inicial de la aplicación web.
+- [x] Catálogo interactivo con búsqueda y filtros.
+- [x] Interfaz del carrito de compras.
+- [x] Interfaces de registro e inicio de sesión.
+- [x] Panel administrativo inicial.
 
-## 📚 Aprendizajes aplicados
+Mejoras futuras
 
-- Manipulación del DOM sin frameworks
-- Event delegation y manejo de eventos globales
-- Persistencia de datos con `localStorage`
-- Validación de formularios en tiempo real con expresiones regulares
-- Arquitectura modular con IIFE y `'use strict'`
-- Diseño responsive mobile-first
-- Protección de rutas según el rol del usuario
-- Despliegue con GitHub Pages
+- [ ] Implementar un backend y una API.
+- [ ] Integrar una base de datos.
+- [ ] Implementar autenticación segura y autorización por roles.
+- [ ] Centralizar la gestión de productos, usuarios y pedidos.
+- [ ] Integrar una pasarela de pagos.
+- [ ] Incorporar notificaciones en tiempo real.
+- [ ] Evaluar una Progressive Web App (PWA).
+- [ ] Evaluar el desarrollo de una aplicación móvil.
+
+Las casillas deben actualizarse según el progreso real del proyecto y la verificación de cada funcionalidad.
 
 ---
 
-## 🤝 Contribuciones
+🧠 9. Aprendizajes y competencias
 
-Este es un proyecto formativo, pero cualquier sugerencia es bienvenida:
+El desarrollo de FeriApp permite aplicar y fortalecer conocimientos en:
 
-1. Haz un fork del proyecto
-2. Crea una rama: `git checkout -b feature/nueva-mejora`
-3. Commit: `git commit -m 'Añadir nueva mejora'`
-4. Push: `git push origin feature/nueva-mejora`
-5. Abre un Pull Request
-
----
-
-## 👨‍💻 Autor
-
-**Gerson H. C.**
-
-- GitHub: [@Gerson-hc](https://github.com/Gerson-hc)
-- Proyecto: [FeriApp](https://github.com/Gerson-hc/feriapp-page)
-- Demo: [gerson-hc.github.io/feriapp-page](https://gerson-hc.github.io/feriapp-page/)
+- Estructuración de páginas con HTML5.
+- Diseño de interfaces mediante CSS3.
+- Programación frontend con JavaScript.
+- Manipulación del DOM y gestión de eventos.
+- Validación de formularios.
+- Persistencia local con "localStorage".
+- Organización y separación de responsabilidades del código.
+- Control de versiones con Git y GitHub.
+- Publicación de sitios estáticos con GitHub Pages.
+- Colaboración y organización del trabajo mediante Scrum.
 
 ---
 
-## 📄 Licencia
+🤝 10. Contribuciones
 
-Este proyecto está bajo la licencia **MIT**. Puedes usarlo, modificarlo y compartirlo libremente dando el crédito correspondiente.
+Las sugerencias y propuestas de mejora son bienvenidas.
 
-Consulta el archivo [LICENSE](LICENSE) para más detalles.
+1. Realiza un fork del repositorio.
+
+2. Crea una rama para tu contribución:
+   
+   git checkout -b feature/nueva-mejora
+
+3. Implementa y prueba tus cambios.
+
+4. Registra las modificaciones:
+   
+   git add .
+git commit -m "feat: añadir nueva funcionalidad"
+
+5. Publica tu rama:
+   
+   git push origin feature/nueva-mejora
+
+6. Abre un Pull Request explicando los cambios realizados.
+
+También puedes reportar errores o proponer mejoras en la sección "Issues" (../../issues).
 
 ---
 
-<div align="center">
+👥 11. Equipo de desarrollo
 
-### 🌱 Hecho con dedicación para las plazas de mercado de Bogotá 🇨🇴
+FeriApp es un proyecto colaborativo desarrollado en el marco del programa de formación Tecnología en Análisis y Desarrollo de Software (ADSO) del SENA.
 
-**Proyecto formativo SENA - ADSO 2026**
+Integrante| Rol en Scrum
+Gerson H. C.| Scrum Master
+Heller Tobito| Product Owner
+Sergio Gonzales| Developer
 
-⭐ ¡Dale una estrella si te gusta el proyecto! ⭐
+Enlaces del proyecto
 
-</div>
+- Repositorio: "Gerson-hc/feriapp-page" (https://github.com/Gerson-hc/feriapp-page)
+- Demo: "FeriApp en GitHub Pages" (https://gerson-hc.github.io/feriapp-page/)
+
+---
+
+📄 12. Licencia
+
+El proyecto declara utilizar la licencia MIT. Consulta el archivo ""LICENSE"" (LICENSE) para verificar sus términos y condiciones.
+
+---
+
+<p align="center">
+  🥕 <strong>FeriApp</strong><br>
+  Tecnología al servicio del comercio local colombiano 🇨🇴<br><br>
+  Proyecto formativo · SENA · ADSO · 2026
+</p>

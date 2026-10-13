@@ -1,111 +1,94 @@
 🥕 FeriApp
 
-Plataforma web para la gestión de inventarios y la venta directa en plazas de mercado de Bogotá
+Plataforma web para la gestión de inventarios y la venta directa en plazas de mercado de Bogotá, Colombia.
 
-<div align="center">""SENA" (https://img.shields.io/badge/SENA-ADSO-39a900?style=for-the-badge)" (https://www.sena.edu.co/)
-""HTML5" (https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)" (https://developer.mozilla.org/es/docs/Web/HTML)
-""CSS3" (https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)" (https://developer.mozilla.org/es/docs/Web/CSS)
-""JavaScript" (https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)" (https://developer.mozilla.org/es/docs/Web/JavaScript)
-""GitHub Pages" (https://img.shields.io/badge/Despliegue-GitHub%20Pages-222222?style=for-the-badge&logo=github&logoColor=white)" (https://pages.github.com/)
+FeriApp es un proyecto formativo del programa Tecnología en Análisis y Desarrollo de Software (ADSO) del SENA. Su objetivo es facilitar la gestión de productos, inventarios y ventas, conectando a vendedores y compradores mediante una plataforma digital.
 
-"🌐 Ver demo en vivo" (https://gerson-hc.github.io/feriapp-page/) · "🐛 Reportar un problema" (../../issues) · "💡 Proponer una mejora" (../../issues)
+<p align="center">
+  <img src="https://img.shields.io/badge/SENA-ADSO-39A900?style=for-the-badge" alt="SENA ADSO">
+  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5">
+  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3">
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript">
+</p>🌐 Demo
 
-</div>---
+Página web: https://gerson-hc.github.io/feriapp-page/
 
-📖 1. Descripción del proyecto
+Repositorio: https://github.com/Gerson-hc/feriapp-page
 
-FeriApp es una plataforma web orientada a la digitalización del comercio en las plazas de mercado de Bogotá. Su propósito es facilitar la gestión de productos y la conexión entre productores, comerciantes y compradores mediante herramientas digitales para consultar inventarios, visualizar precios y realizar pedidos.
+📌 Tabla de contenido
 
-El proyecto se desarrolla en el marco del programa Tecnología en Análisis y Desarrollo de Software (ADSO) del Servicio Nacional de Aprendizaje (SENA), como una iniciativa formativa que busca aplicar conocimientos de desarrollo de software a una necesidad del comercio local.
+- "Acerca del proyecto" (#-acerca-del-proyecto)
+- "Objetivos" (#-objetivos)
+- "Funcionalidades" (#-funcionalidades)
+- "Tecnologías" (#-tecnologías)
+- "Estructura del proyecto" (#-estructura-del-proyecto)
+- "Instalación y ejecución" (#-instalación-y-ejecución)
+- "Estado del proyecto" (#-estado-del-proyecto)
+- "Metodología de trabajo" (#-metodología-de-trabajo)
+- "Equipo de desarrollo" (#-equipo-de-desarrollo)
+- "Licencia" (#-licencia)
 
-🎯 Objetivo general
+📖 Acerca del proyecto
 
-Desarrollar una plataforma web que facilite la gestión de inventarios y la venta directa de productos en las plazas de mercado, mejorando su visibilidad digital y la interacción entre comerciantes y compradores.
+Las plazas de mercado cumplen un papel importante en el abastecimiento de alimentos y la economía local. Sin embargo, algunos comerciantes todavía gestionan sus productos, inventarios y registros de ventas mediante herramientas tradicionales, como cuadernos y documentos digitales.
 
-🌱 Propósito
+FeriApp busca explorar una alternativa digital que permita organizar esta información y mejorar la experiencia de compra y venta.
 
-Contribuir a la modernización del comercio local mediante herramientas digitales accesibles que permitan organizar la información de los productos y explorar nuevas oportunidades de comercialización.
+El proyecto se desarrolla como parte del proceso de formación en ADSO del Servicio Nacional de Aprendizaje (SENA).
 
----
+🎯 Objetivos
 
-✨ 2. Funcionalidades principales
+- Facilitar la consulta de productos disponibles.
+- Explorar herramientas digitales para la gestión de inventarios.
+- Organizar la información relacionada con productos y ventas.
+- Diseñar una experiencia de usuario clara e intuitiva.
+- Aplicar conocimientos de programación, bases de datos y desarrollo web.
+- Trabajar colaborativamente mediante una metodología ágil.
 
-🏪 Gestión de productores y locales
+✨ Funcionalidades
 
-- Interfaces para el registro y la gestión de productores.
-- Organización de la información de plazas y locales.
-- Propuesta de mapa interactivo para localizar establecimientos.
+El prototipo contempla módulos relacionados con:
 
-📦 Gestión de inventarios
+- Catálogo de productos: presentación y consulta de productos.
+- Búsqueda y filtros: exploración de productos por categorías.
+- Ordenamiento: organización de productos según criterios disponibles.
+- Carrito de compras: interacción con los productos seleccionados.
+- Usuarios y perfiles: interfaces relacionadas con las cuentas de usuario.
+- Pedidos y devoluciones: módulos para consultar y organizar estos procesos.
+- Gestión de vendedores: interfaces orientadas a la administración de productos.
+- Administración: interfaz destinada a funciones administrativas.
 
-- Publicación y administración de productos.
-- Consulta de precios y existencias.
-- Incorporación de imágenes de productos.
-- Propuesta de alertas para niveles mínimos de inventario.
+«La disponibilidad y el funcionamiento de cada característica dependen de la implementación actual del prototipo. Los módulos visuales no implican necesariamente que exista un backend o una base de datos conectada.»
 
-🛒 Ventas y compradores
+🛠️ Tecnologías
 
-- Catálogo interactivo de productos.
-- Búsqueda por nombre y filtros por categoría.
-- Ordenamiento por nombre y precio.
-- Carrito de compras.
-- Interfaces para la gestión de pedidos y devoluciones.
-- Calificaciones y opiniones.
-
-⚙️ Administración
-
-- Panel administrativo con indicadores.
-- Interfaces para moderar productos.
-- Gestión de usuarios y estados de las cuentas.
-- Visualización de reseñas de la plataforma.
-
-🔐 Autenticación y gestión de usuarios
-
-- Formularios de registro e inicio de sesión.
-- Validación de campos y formatos de correo electrónico.
-- Validación de edad durante el registro.
-- Navegación según los roles de usuario.
-- Gestión de sesiones en el navegador.
-
-«Estado actual: el repositorio contiene un prototipo frontend desplegado en GitHub Pages. Las funcionalidades que dependen de un servidor, una base de datos compartida o autenticación segura requieren la implementación de la arquitectura backend. La existencia de una interfaz no implica que todos los procesos estén conectados o funcionen en producción.»
-
----
-
-🛠️ 3. Tecnologías utilizadas
-
-Implementación actual
+Implementadas en el prototipo
 
 Tecnología| Uso
-HTML5| Estructura de las páginas web.
-CSS3| Diseño adaptable, estilos y animaciones.
-JavaScript ES6+| Lógica e interactividad del frontend.
-DOM API| Manipulación dinámica de la interfaz.
-LocalStorage| Persistencia local de información en el navegador.
-Git| Control de versiones.
-GitHub| Alojamiento y colaboración en el código.
-GitHub Pages| Publicación de la aplicación web estática.
+HTML5| Estructura de las páginas web
+CSS3| Estilos y diseño visual
+JavaScript| Interactividad y lógica del frontend
+LocalStorage| Persistencia local de determinados datos en el navegador
+Git y GitHub| Control de versiones y alojamiento del código
+GitHub Pages| Publicación de la página web
 
-Tecnologías previstas para futuras fases
+Tecnologías consideradas para futuras fases
 
 Tecnología| Propósito
-React.js| Construcción de una interfaz frontend basada en componentes.
-Node.js| Entorno de ejecución para el backend.
-Express.js| Desarrollo de la API REST.
-MySQL 8| Almacenamiento estructurado de datos.
-JWT| Gestión de tokens de autenticación.
-bcrypt| Hash de contraseñas.
-SVG| Posible implementación del mapa interactivo.
+React| Desarrollo de una interfaz basada en componentes
+Node.js| Entorno de ejecución para el servidor
+Express| Construcción de una API REST
+MySQL 8| Gestión de una base de datos relacional
+JWT y bcrypt| Autenticación y protección de credenciales
 
-Las tecnologías previstas no deben interpretarse como implementadas hasta que exista código funcional que las utilice.
+Estas tecnologías futuras representan una propuesta de evolución y no deben interpretarse como funcionalidades ya implementadas.
 
----
+📁 Estructura del proyecto
 
-📁 4. Estructura del proyecto
+La estructura puede variar según los archivos existentes en el repositorio.
 
 feriapp-page/
 ├── index.html
-├── README.md
-├── LICENSE
 ├── css/
 │   ├── principal.css
 │   └── autenticacion.css
@@ -113,311 +96,105 @@ feriapp-page/
 │   ├── principal.js
 │   └── autenticacion.js
 ├── Imagenes/
-└── html/
-    ├── login.html
-    ├── registro.html
-    ├── recuperacion.html
-    ├── carrito.html
-    ├── perfil.html
-    ├── pedidos.html
-    ├── devoluciones.html
-    ├── mis_productos.html
-    ├── admin.html
-    ├── asesoria.html
-    ├── logistica.html
-    ├── soporte.html
-    ├── contacto.html
-    └── proveedores.html
+├── html/
+│   ├── login.html
+│   ├── registro.html
+│   ├── recuperacion.html
+│   ├── carrito.html
+│   ├── perfil.html
+│   ├── pedidos.html
+│   ├── devoluciones.html
+│   ├── mis_productos.html
+│   ├── admin.html
+│   ├── asesoria.html
+│   ├── logistica.html
+│   ├── soporte.html
+│   ├── contacto.html
+│   └── proveedores.html
+└── README.md
 
-Esta estructura es orientativa y debe verificarse frente a los archivos reales del repositorio.
+Nota: esta estructura es orientativa. Los nombres y las rutas deben coincidir con los archivos que realmente existen en el repositorio.
 
----
+🚀 Instalación y ejecución
 
-🚀 5. Instalación y ejecución local
+Puedes explorar el proyecto directamente desde GitHub Pages o ejecutarlo localmente.
 
-Requisitos
+Opción 1. Desde la página web
 
-- Navegador web actualizado.
-- Git, para clonar el repositorio.
-- Python 3, para ejecutar un servidor local.
+Visita:
 
-Opción 1. Descargar el proyecto
+https://gerson-hc.github.io/feriapp-page/
 
-1. Ingresa al "repositorio de FeriApp" (https://github.com/Gerson-hc/feriapp-page).
-2. Selecciona Code → Download ZIP.
-3. Descomprime el archivo.
-4. Abre "index.html" en el navegador.
+Opción 2. En un computador
 
-Opción 2. Clonar con Git
-
-git clone https://github.com/Gerson-hc/feriapp-page.git
-cd feriapp-page
-
-Opción 3. Iniciar un servidor local
-
-Desde la carpeta raíz del proyecto, ejecuta:
-
-python3 -m http.server 8000
-
-Después, abre la siguiente dirección en tu navegador:
-
-http://localhost:8000
-
-También puedes utilizar "npx live-server" si tienes Node.js instalado y deseas ejecutar un servidor de desarrollo compatible.
-
----
-
-🖼️ 6. Capturas de pantalla
-
-Las capturas de pantalla permiten visualizar la interfaz y las principales funcionalidades del proyecto.
-
-Vista| Archivo sugerido
-Catálogo principal| "Imagenes/catalogo.png"
-Inicio de sesión| "Imagenes/login.png"
-Carrito de compras| "Imagenes/carrito.png"
-Panel administrativo| "Imagenes/admin.png"
-
-Para mostrar una captura, agrega el archivo correspondiente al repositorio y utiliza una ruta relativa:
-
-![Catálogo principal de FeriApp](Imagenes/catalogo.png)
-
-Reemplaza los nombres sugeridos por las rutas de las capturas reales.
-
----
-
-🗺️ 7. Roadmap
-
-Fase 1. Prototipo frontend
-
-- [x] Estructura inicial de la aplicación.
-- [x] Catálogo interactivo con filtros.
-- [x] Interfaz del carrito de compras.
-- [x] Interfaces de registro e inicio de sesión.
-- [x] Panel administrativo inicial.
-
-Fase 2. Backend y persistencia
-
-- [ ] Diseñar e implementar la API REST.
-- [ ] Configurar el backend con Node.js y Express.
-- [ ] Integrar la base de datos MySQL.
-- [ ] Centralizar la gestión de productos, usuarios e inventarios.
-- [ ] Implementar la gestión de pedidos.
-- [ ] Implementar autenticación segura y autorización por roles.
-
-Fase 3. Funcionalidades avanzadas
-
-- [ ] Implementar el mapa interactivo de plazas y locales.
-- [ ] Incorporar alertas de inventario.
-- [ ] Evaluar una pasarela de pagos.
-- [ ] Implementar notificaciones en tiempo real.
-- [ ] Evaluar una Progressive Web App (PWA).
-- [ ] Evaluar el desarrollo de una aplicación móvil.
-
-El estado de cada tarea debe actualizarse según el avance real del equipo. Las casillas marcadas como completadas corresponden al alcance declarado del prototipo y deben verificarse en el código.
-
----
-
-🏛️ 8. Arquitectura del sistema
-
-Fase 1. Prototipo actual
-
-Componente| Implementación
-Frontend| HTML5, CSS3 y JavaScript ES6+
-Persistencia| LocalStorage del navegador
-Despliegue| GitHub Pages
-Estado| Prototipo frontend con persistencia local y datos de demostración, según la funcionalidad implementada
-
-El objetivo de esta fase es construir y evaluar la interfaz, la navegación y la experiencia de usuario antes de implementar los servicios backend.
-
-Fase 2. Arquitectura propuesta
-
-Capa| Tecnología o componente
-Presentación| React.js
-Backend| Node.js y Express.js
-Comunicación| API REST
-Base de datos| MySQL 8
-Autenticación| JWT
-Seguridad de contraseñas| bcrypt
-Mapa interactivo| SVG
-Despliegue| Servicio de alojamiento compatible con frontend y backend
-
-La arquitectura definitiva deberá validarse durante el diseño técnico. La elección de tecnologías puede ajustarse a las necesidades y restricciones del proyecto.
-
----
-
-📦 9. Módulos del sistema
-
-🏪 Módulo de productores
-
-Orientado a organizar la información de los productores y los establecimientos comerciales.
-
-- Registro y gestión de productores.
-- Gestión de plazas y locales.
-- Consulta de información de establecimientos.
-- Mapa interactivo para localizar locales, como funcionalidad prevista.
-
-📦 Módulo de inventarios
-
-Orientado a facilitar el control de los productos comercializados.
-
-- Registro y actualización de productos.
-- Gestión de existencias y precios.
-- Consulta de disponibilidad.
-- Alertas de inventario mínimo, como funcionalidad prevista.
-
-🛒 Módulo de ventas
-
-Orientado a facilitar la consulta de productos y la gestión de pedidos.
-
-- Catálogo público.
-- Búsqueda y filtrado de productos.
-- Carrito de compras.
-- Solicitud de pedidos para recoger en el local.
-- Calificación de productos y establecimientos.
-
----
-
-📊 10. Requerimientos y documentación
-
-Según la planificación documental del proyecto, se contempla la siguiente especificación:
-
-Artefacto| Cantidad prevista
-Requerimientos funcionales| 20
-Requerimientos no funcionales| 7
-Historias de usuario| 19
-Casos de uso UML| 15
-Entidades del modelo de datos| 12
-
-Documentación técnica
-
-La documentación prevista incluye:
-
-- Especificación de requerimientos funcionales RF-01 a RF-20.
-- Requerimientos no funcionales con criterios basados en ISO/IEC 25010.
-- Historias de usuario con criterios de aceptación.
-- Diagramas de casos de uso UML.
-- Modelo entidad-relación.
-- Script SQL para MySQL 8.
-- Documento de especificación de arquitectura.
-
-Las cantidades corresponden a la planificación informada del proyecto. Los documentos y artefactos deben estar disponibles y completos para considerarse entregables terminados.
-
----
-
-🧠 11. Aprendizajes y competencias
-
-El desarrollo de FeriApp permite aplicar conocimientos de:
-
-- Estructuración semántica con HTML5.
-- Diseño adaptable mediante CSS3.
-- Programación frontend con JavaScript.
-- Manipulación del DOM y gestión de eventos.
-- Validación de formularios.
-- Persistencia de datos con LocalStorage.
-- Organización y separación de responsabilidades del código.
-- Control de versiones mediante Git y GitHub.
-- Despliegue de sitios estáticos con GitHub Pages.
-- Análisis y documentación de requerimientos.
-- Modelado de datos y diseño de arquitectura.
-- Trabajo colaborativo mediante Scrum.
-
----
-
-🔄 12. Metodología de trabajo: Scrum
-
-El equipo toma como referencia el marco de trabajo ágil Scrum, que promueve la transparencia, la inspección, la adaptación y la entrega incremental de valor.
-
-👥 Organización del equipo
-
-Integrante| Rol| Responsabilidades principales
-Gerson H. C.| Scrum Master| Facilitar Scrum, ayudar a eliminar impedimentos, promover la colaboración y fomentar la mejora continua.
-Heller Tobito| Product Owner| Comunicar la visión del producto, gestionar y priorizar el Product Backlog y maximizar el valor del producto.
-Sergio González| Developer| Participar en la construcción, implementación, verificación y mejora de las funcionalidades.
-
-Responsabilidades por rol
-
-Scrum Master — Gerson H. C.
-
-- Facilitar la aplicación correcta de Scrum.
-- Promover la colaboración entre los integrantes.
-- Ayudar a identificar y eliminar impedimentos.
-- Fomentar la mejora continua del equipo.
-
-Product Owner — Heller Tobito
-
-- Definir y comunicar los objetivos del producto.
-- Gestionar y ordenar el Product Backlog.
-- Priorizar funcionalidades según su valor.
-- Mantener claras las necesidades de los usuarios.
-
-Developer — Sergio González
-
-- Participar en la construcción del producto.
-- Implementar y verificar funcionalidades.
-- Colaborar con los demás integrantes.
-- Contribuir a la calidad del incremento.
-
-En Scrum, los roles tienen responsabilidades diferentes y complementarias. El Scrum Master no es el jefe del equipo y el Product Owner no dirige jerárquicamente a los Developers.
-
----
-
-🤝 13. Contribuciones
-
-Las sugerencias y propuestas de mejora son bienvenidas.
-
-1. Realiza un fork del repositorio.
-
-2. Crea una rama para tu contribución:
+1. Clona el repositorio:
    
-   git checkout -b feature/nueva-mejora
+   git clone https://github.com/Gerson-hc/feriapp-page.git
 
-3. Implementa y prueba tus cambios.
-
-4. Registra las modificaciones:
+2. Entra en la carpeta:
    
-   git add .
-git commit -m "feat: añadir nueva funcionalidad"
+   cd feriapp-page
 
-5. Publica tu rama:
-   
-   git push origin feature/nueva-mejora
+3. Abre "index.html" en el navegador.
 
-6. Abre un Pull Request explicando los cambios.
+También puedes utilizar la extensión Live Server de Visual Studio Code para ejecutar el frontend durante el desarrollo.
 
-También puedes informar errores o proponer funcionalidades mediante "GitHub Issues" (../../issues).
+🗺️ Estado del proyecto
 
----
+Etapa actual: prototipo frontend y desarrollo formativo.
 
-👥 14. Equipo de desarrollo
+El proyecto está orientado a construir una solución digital para la gestión de productos e inventarios en plazas de mercado.
 
-Proyecto colaborativo del programa Tecnología en Análisis y Desarrollo de Software (ADSO) del SENA.
+Próximos pasos propuestos
 
-Ficha de formación: 3478080.
+- [ ] Revisar y mejorar la interfaz de usuario.
+- [ ] Validar los flujos principales de navegación.
+- [ ] Mejorar las validaciones de formularios.
+- [ ] Completar las pruebas funcionales.
+- [ ] Consolidar los requerimientos del sistema.
+- [ ] Diseñar e implementar una API REST.
+- [ ] Integrar una base de datos relacional.
+- [ ] Implementar autenticación segura.
+- [ ] Realizar pruebas de integración y seguridad.
 
-Integrante| Rol en Scrum
+La lista representa tareas propuestas; su estado debe actualizarse conforme avance el desarrollo.
+
+🔄 Metodología de trabajo
+
+El equipo utiliza el marco de trabajo Scrum como referencia para organizar las actividades, priorizar funcionalidades y hacer seguimiento al desarrollo.
+
+Entre sus prácticas se encuentran:
+
+- Organización y priorización del trabajo.
+- Definición de historias de usuario.
+- Seguimiento de tareas.
+- Revisión de avances.
+- Identificación de oportunidades de mejora.
+
+👥 Equipo de desarrollo
+
+Integrante| Rol
 Gerson H. C.| Scrum Master
 Heller Tobito| Product Owner
 Sergio González| Developer
 
-Enlaces
+Los roles corresponden a la organización del equipo para el proyecto formativo.
 
-- Repositorio: "Gerson-hc/feriapp-page" (https://github.com/Gerson-hc/feriapp-page)
-- Demo en vivo: "FeriApp en GitHub Pages" (https://gerson-hc.github.io/feriapp-page/)
+🎓 Contexto académico
+
+- Institución: Servicio Nacional de Aprendizaje (SENA).
+- Programa: Tecnología en Análisis y Desarrollo de Software (ADSO).
+- Ficha: 3478080.
+- Tipo de proyecto: proyecto formativo.
+
+📄 Licencia
+
+Consulta el archivo "LICENSE" del repositorio para conocer las condiciones de uso, modificación y distribución del código.
+
+Si el proyecto utiliza la licencia MIT, asegúrate de que el archivo "LICENSE" incluya el texto correspondiente.
 
 ---
 
-📄 15. Licencia
-
-El proyecto declara utilizar la licencia MIT. Consulta el archivo ""LICENSE"" (LICENSE) para verificar los términos y condiciones aplicables.
-
----
-
-<div align="center">🌱 FeriApp
-
-Tecnología al servicio del comercio local colombiano 🇨🇴
-
-Proyecto formativo SENA · ADSO · 2026
-
-⭐ Si te interesa el proyecto, puedes darle una estrella al repositorio.
-
-</div>
+<p align="center">
+  Desarrollado como parte del proceso de formación en ADSO — SENA.
+</p>

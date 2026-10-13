@@ -1,3 +1,7 @@
+// Rutas: la página de inicio (index.html) está en la raíz y las demás páginas en html/.
+// FERI_BASE_HTML es el prefijo para llegar a html/ desde la página actual; FERI_HOME lleva al inicio.
+const FERI_BASE_HTML = window.location.pathname.includes('/html/') ? '' : 'html/';
+const FERI_HOME = window.location.pathname.includes('/html/') ? '../index.html' : 'index.html';
 /* =====================================================================
    FeriApp | Núcleo de tienda, sesión opcional y carrito
    ===================================================================== */
@@ -64,7 +68,7 @@
         const params = new URLSearchParams();
         if (returnTo) params.set('return', returnTo);
         if (reason) params.set('reason', reason);
-        return `login.html${params.toString() ? '?' + params.toString() : ''}`;
+        return `${FERI_BASE_HTML}login.html${params.toString() ? '?' + params.toString() : ''}`;
     }
 
     function requireAuth(returnTo = 'principal.html', reason = 'auth') {
@@ -93,7 +97,7 @@
         localStorage.removeItem('fotoferiapp');
         localStorage.removeItem('bioferiapp');
         localStorage.removeItem('feriapp_accion_pendiente');
-        window.location.href = 'principal.html';
+        window.location.href = FERI_HOME;
     }
 
     const PUBLIC_ROUTES = new Set([
@@ -116,12 +120,12 @@
         }
 
         if (page === 'mis_productos.html' && session.role !== 'vendedor') {
-            window.location.href = 'principal.html';
+            window.location.href = FERI_HOME;
             return false;
         }
 
         if (page === 'admin.html' && session.role !== 'admin') {
-            window.location.href = 'principal.html';
+            window.location.href = FERI_HOME;
             return false;
         }
 
@@ -169,17 +173,17 @@
                     <p><strong>¡hola, visitante!</strong></p>
                     <p style="font-size:0.75rem; color:#666; text-align:center; margin-top:-5px; margin-bottom:10px;">estás navegando como invitado</p>
                     <hr>
-                    <a href="login.html?return=principal.html">iniciar sesión</a>
-                    <a href="registro.html">crear una cuenta</a>
+                    <a href="${FERI_BASE_HTML}login.html?return=principal.html">iniciar sesión</a>
+                    <a href="${FERI_BASE_HTML}registro.html">crear una cuenta</a>
                 `;
             } else {
                 let enlacesExtra = '';
                 if (rolactual === 'vendedor') {
-                    enlacesExtra = `<a href="mis_productos.html" style="color:#bc6c25; font-weight:bold;">📦 gestionar mis productos</a>`;
+                    enlacesExtra = `<a href="${FERI_BASE_HTML}mis_productos.html" style="color:#bc6c25; font-weight:bold;">📦 gestionar mis productos</a>`;
                     const btnAgregar = document.getElementById('botonagregarprod');
                     if (btnAgregar) btnAgregar.classList.remove('oculto');
                 } else if (rolactual === 'admin') {
-                    enlacesExtra = `<a href="admin.html" style="color:#d90429; font-weight:bold;">⚙️ panel de administrador</a>`;
+                    enlacesExtra = `<a href="${FERI_BASE_HTML}admin.html" style="color:#d90429; font-weight:bold;">⚙️ panel de administrador</a>`;
                 }
 
                 menuPerfil.innerHTML = `
@@ -187,8 +191,8 @@
                     <p style="font-size:0.75rem; color:#666; text-align:center; margin-top:-5px; margin-bottom:10px;">(${escapeHTML(rolactual)})</p>
                     <hr>
                     ${enlacesExtra}
-                    <a href="perfil.html">editar mi perfil</a>
-                    <a href="pedidos.html">mis compras / historial</a>
+                    <a href="${FERI_BASE_HTML}perfil.html">editar mi perfil</a>
+                    <a href="${FERI_BASE_HTML}pedidos.html">mis compras / historial</a>
                     <hr>
                     <a href="#" id="botoncerrarsesion" style="color: #d90429; font-weight: bold;">cerrar sesión</a>
                 `;
@@ -224,20 +228,20 @@
             } else if (rolactual === 'comprador') {
                 tituloServicios.textContent = 'atención al cliente ▼';
                 menuServicios.innerHTML = `
-                    <a href="soporte.html">centro de ayuda (PQR)</a>
+                    <a href="${FERI_BASE_HTML}soporte.html">centro de ayuda (PQR)</a>
                     <a href="#" onclick="abrirModalCalificar(event)">⭐ calificar FeriApp</a>
                 `;
             } else if (rolactual === 'vendedor') {
                 tituloServicios.textContent = 'herramientas B2B ▼';
                 menuServicios.innerHTML = `
-                    <a href="asesoria.html">🌱 asesoría agrícola</a>
-                    <a href="logistica.html">🚚 logística y fletes</a>
-                    <a href="proveedores.html">🏭 proveedores de insumos</a>
-                    <a href="soporte.html">🎧 soporte técnico</a>
+                    <a href="${FERI_BASE_HTML}asesoria.html">🌱 asesoría agrícola</a>
+                    <a href="${FERI_BASE_HTML}logistica.html">🚚 logística y fletes</a>
+                    <a href="${FERI_BASE_HTML}proveedores.html">🏭 proveedores de insumos</a>
+                    <a href="${FERI_BASE_HTML}soporte.html">🎧 soporte técnico</a>
                 `;
             } else if (rolactual === 'admin') {
                 tituloServicios.textContent = 'accesos rápidos ▼';
-                menuServicios.innerHTML = `<a href="admin.html">⚙️ ir al panel de control</a>`;
+                menuServicios.innerHTML = `<a href="${FERI_BASE_HTML}admin.html">⚙️ ir al panel de control</a>`;
             }
         }
 
@@ -440,7 +444,7 @@
         if (e.target.classList.contains('botoncomprar')) {
             e.stopPropagation();
             // La compra se hace en el catálogo nuevo: allí el cliente elige la cantidad y separa el pedido.
-            window.location.href = 'catalogo.html';
+            window.location.href = FERI_BASE_HTML + 'catalogo.html';
             return;
         }
 

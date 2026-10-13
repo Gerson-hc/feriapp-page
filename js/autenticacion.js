@@ -91,7 +91,7 @@
         }
 
         const allowed = new Set([
-            'principal.html',
+            '../index.html',
             'carrito.html',
             'pedidos.html',
             'perfil.html',
@@ -110,10 +110,10 @@
 
     function getDestination(role, isRegistration) {
         // El registro siempre vuelve al catálogo para evitar rebotes y bloqueos.
-        if (isRegistration) return 'principal.html';
+        if (isRegistration) return '../index.html';
         if (role === 'admin') return 'admin.html';
         if (role === 'vendedor') return 'mis_productos.html';
-        return 'principal.html';
+        return '../index.html';
     }
 
     function getPendingCartKey() {

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de la plaza - Feriapp</title>
+    <link rel="stylesheet" href="../css/principal.css">
+    <style>
+        .mapa-barra { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; margin-bottom: var(--space-2); }
+        .mapa-barra select { padding: 10px 14px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface); }
+        .leyenda { display: flex; flex-wrap: wrap; gap: var(--space-2); font-size: .85rem; color: var(--color-text-muted); }
+        .leyenda span::before { content: ""; display: inline-block; width: 14px; height: 14px; border-radius: 3px; margin-right: 6px; vertical-align: -2px; border: 2px solid var(--color-primary); }
+        .leyenda .l-abierto::before { background: var(--color-primary); }
+        .leyenda .l-cerrado::before { background: #B9B5A8; border-color: #B9B5A8; }
+        .leyenda .l-disponible::before { background: transparent; border-style: dashed; }
+        .mapa-layout { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: flex-start; }
+        .mapa-caja { flex: 2 1 380px; min-width: 0; background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: var(--space-2); overflow-x: auto; }
+        .mapa-detalle { flex: 1 1 280px; background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: var(--space-3); }
+        svg.plano { width: 100%; height: auto; min-width: 320px; display: block; }
+        .local { cursor: pointer; outline: none; }
+        .local rect { stroke-width: 3; transition: filter .15s; }
+        .local:hover rect, .local:focus rect { filter: brightness(1.12); }
+        .local.sel rect { stroke: var(--color-accent); stroke-width: 5; }
+        .local text { pointer-events: none; font-family: inherit; }
+        .e-abierto rect { fill: var(--color-primary); stroke: var(--color-primary); }
+        .e-cerrado rect { fill: #B9B5A8; stroke: #B9B5A8; }
+        .e-disponible rect { fill: var(--color-surface); stroke: var(--color-primary); stroke-dasharray: 8 5; }
+        .e-disponible text { fill: var(--color-primary); }
+        .estrellas { color: var(--color-rating); letter-spacing: 2px; }
+        .lista-prod { list-style: none; padding: 0; margin: var(--space-1) 0 0; }
+        .lista-prod li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--color-border); font-size: .92rem; }
+        .aviso-bajo { color: var(--color-danger); font-size: .78rem; font-weight: bold; }
+        .vacio { color: var(--color-text-muted); font-size: .92rem; }
+        .nota-datos { margin-top: var(--space-2); font-size: .8rem; color: var(--color-text-muted); }
+    </style>
+</head>
+<body>
+    <header class="encabezado">
+        <a href="principal.html" class="enlacelogo">
+            <img src="../Imagenes/logo_sin_fondo.png" alt="Feriapp" style="height: 70px; width: auto; display: block;">
+        </a>
+        <nav class="navegacion">
+            <a href="catalogo.html" class="enlacenav">catálogo</a>
+            <a href="mapa.html" class="enlacenav">mapa</a>
+            <a href="contacto.html" class="enlacenav">contacto</a>
+            <a href="login.html" id="enlacesesion" class="enlacenav">iniciar sesión</a>
+        </nav>
+    </header>
+
+    <div class="contenedorinterno">
+        <h1 class="titulointerno">mapa de la plaza</h1>
+        <p style="color: var(--color-text-muted); margin-bottom: var(--space-2);">Ubica un local, mira quién lo atiende, qué productos tiene disponibles y cómo lo califican. No necesitas iniciar sesión.</p>
+
+        <div class="mapa-barra">
+            <label for="selplaza"><strong>plaza:</strong></label>
+            <select id="selplaza"></select>
+            <div class="leyenda">
+                <span class="l-abierto">abierto</span>
+                <span class="l-cerrado">cerrado</span>
+                <span class="l-disponible">disponible (sin productor)</span>
+            </div>
+        </div>
+
+        <div class="mapa-layout">
+            <div class="mapa-caja"><svg id="plano" class="plano" role="group" aria-label="Plano de la plaza"></svg></div>
+            <aside class="mapa-detalle" id="detalle" aria-live="polite">
+                <p class="vacio">Selecciona un local en el mapa para ver su información.</p>
+            </aside>
+        </div>
+        <p class="nota-datos">Datos de ejemplo tomados del script SQL del documento de arquitectura (anexo A). Con la API REST vendrán de las tablas plaza, local_comercial, producto, inventario y calificacion_local.</p>
+    </div>
+
+    <script src="../js/datos.js"></script>
+    <script>
+    const $ = id => document.getElementById(id);
+    const cop = n => '$' + n.toLocaleString('es-CO');
+    const prom = a => a.length ? a.reduce((s, v) => s + v, 0) / a.length : null;
+    const estrellas = p => '★'.repeat(Math.round(p)) + '☆'.repeat(5 - Math.round(p));
+    const W = 150, H = 100, GAP = 20;
+    let plazaActual = null;
+
+    function pintarPlano() {
+        const ls = locales.filter(l => l.plaza === plazaActual);
+        const maxX = Math.max(...ls.map(l => l.x)), maxY = Math.max(...ls.map(l => l.y));
+        const svg = $('plano');
+        svg.setAttribute('viewBox', `0 0 ${maxX * (W + GAP) + GAP} ${maxY * (H + GAP) + GAP}`);
+        svg.innerHTML = ls.map(l => {
+            const x = GAP + (l.x - 1) * (W + GAP), y = GAP + (l.y - 1) * (H + GAP);
+            const claro = l.estado === 'disponible';
+            return `<g class="local e-${l.estado}" data-id="${l.id}" tabindex="0" role="button"
+                       aria-label="Local ${l.codigo}, ${l.nombre}, ${l.estado}" transform="translate(${x},${y})">
+                <rect width="${W}" height="${H}" rx="10"></rect>
+                <text x="${W / 2}" y="42" text-anchor="middle" font-size="22" font-weight="bold" fill="${claro ? '' : '#fff'}">${l.codigo}</text>
+                <text x="${W / 2}" y="68" text-anchor="middle" font-size="13" fill="${claro ? '' : '#fff'}">${l.nombre.length > 20 ? l.nombre.slice(0, 19) + '…' : l.nombre}</text>
+            </g>`;
+        }).join('');
+        svg.querySelectorAll('.local').forEach(g => {
+            const abrir = () => mostrar(+g.dataset.id);
+            g.addEventListener('click', abrir);
+            g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(); } });
+        });
+        $('detalle').innerHTML = '<p class="vacio">Selecciona un local en el mapa para ver su información.</p>';
+    }
+
+    function mostrar(id) {
+        document.querySelectorAll('.local').forEach(g => g.classList.toggle('sel', +g.dataset.id === id));
+        const l = locales.find(x => x.id === id);
+        const prods = productos.filter(p => p.local === id && p.cant > 0);
+        const pl = prom(l.calif);
+        const estadoTxt = { abierto: 'Abierto', cerrado: 'Cerrado', disponible: 'Disponible' }[l.estado];
+        let h = `<h2 style="color: var(--color-primary); margin-bottom: 4px;">${l.nombre}</h2>
+                 <p class="vacio">Local ${l.codigo} · ${estadoTxt}</p>
+                 <p style="margin-top: var(--space-1);"><strong>Productor:</strong> ${l.productor ? productores[l.productor] : '<span class="vacio">Este local no tiene productor asignado.</span>'}</p>
+                 <p><strong>Calificación:</strong> ${pl ? `<span class="estrellas">${estrellas(pl)}</span> ${pl.toFixed(1)} (${l.calif.length})` : '<span class="vacio">Aún sin calificaciones.</span>'}</p>
+                 <h3 style="margin-top: var(--space-2);">Productos disponibles</h3>`;
+        if (!prods.length) {
+            h += '<p class="vacio">Este local no tiene productos disponibles por ahora.</p>';
+        } else {
+            h += '<ul class="lista-prod">' + prods.map(p => {
+                const pp = prom(p.calif);
+                return `<li><span>${p.nombre}${pp ? ` <span class="estrellas" title="${pp.toFixed(1)}">★</span>${pp.toFixed(1)}` : ''}
+                        ${Inventario.estado(p) === 'bajo' ? '<br><span class="aviso-bajo">pocas existencias</span>' : ''}</span>
+                        <strong>${cop(p.precio)}/${p.u}</strong></li>`;
+            }).join('') + '</ul>';
+        }
+        if (l.productor && l.estado !== 'cerrado') {
+            h += '<a href="catalogo.html" class="botonaccion" style="display:block; text-align:center; margin-top: var(--space-2);">ver en el catálogo</a>';
+        }
+        $('detalle').innerHTML = h;
+    }
+
+    FeriSesion.pintarEnlace();
+    // Plazas con locales; si no hay ninguna se informa (flujo alterno 2a del CU-04)
+    const conLocales = plazas.filter(p => locales.some(l => l.plaza === p.id));
+    if (!conLocales.length) {
+        $('detalle').innerHTML = '<p class="vacio">Aún no hay plazas registradas.</p>';
+        $('selplaza').disabled = true;
+    } else {
+        $('selplaza').innerHTML = conLocales.map(p => `<option value="${p.id}">${p.nombre} (${p.localidad})</option>`).join('');
+        $('selplaza').addEventListener('change', e => { plazaActual = +e.target.value; pintarPlano(); });
+        plazaActual = conLocales[0].id;
+        pintarPlano();
+    }
+    </script>
+</body>
+</html>

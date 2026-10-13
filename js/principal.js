@@ -64,10 +64,10 @@
         const params = new URLSearchParams();
         if (returnTo) params.set('return', returnTo);
         if (reason) params.set('reason', reason);
-        return `html/login.html${params.toString() ? '?' + params.toString() : ''}`;
+        return `login.html${params.toString() ? '?' + params.toString() : ''}`;
     }
 
-    function requireAuth(returnTo = 'index.html', reason = 'auth') {
+    function requireAuth(returnTo = 'principal.html', reason = 'auth') {
         if (getSession()) return true;
         window.location.href = buildLoginUrl(returnTo, reason);
         return false;
@@ -93,16 +93,15 @@
         localStorage.removeItem('fotoferiapp');
         localStorage.removeItem('bioferiapp');
         localStorage.removeItem('feriapp_accion_pendiente');
-        window.location.href = 'index.html';
+        window.location.href = 'principal.html';
     }
 
     const PUBLIC_ROUTES = new Set([
-        'index.html', 'asesoria.html', 'logistica.html', 'contacto.html',
-        'soporte.html', 'proveedores.html', 'login.html', 'registro.html', 'recuperacion.html'
+        'principal.html', 'asesoria.html', 'logistica.html', 'contacto.html',
+        'soporte.html', 'proveedores.html', 'login.html', 'registro.html', 'recuperacion.html', 'index.html'
     ]);
-
     function currentPage() {
-        return window.location.pathname.split('/').pop().toLowerCase() || 'index.html';
+        return window.location.pathname.split('/').pop().toLowerCase() || 'principal.html';
     }
 
     function protectRoute() {
@@ -111,18 +110,18 @@
 
         const session = getSession();
         if (!session) {
-            const returnTo = page || 'index.html';
+            const returnTo = page || 'principal.html';
             window.location.href = buildLoginUrl(returnTo, 'protected');
             return false;
         }
 
         if (page === 'mis_productos.html' && session.role !== 'vendedor') {
-            window.location.href = 'index.html';
+            window.location.href = 'principal.html';
             return false;
         }
 
         if (page === 'admin.html' && session.role !== 'admin') {
-            window.location.href = 'index.html';
+            window.location.href = 'principal.html';
             return false;
         }
 
@@ -170,17 +169,17 @@
                     <p><strong>¡hola, visitante!</strong></p>
                     <p style="font-size:0.75rem; color:#666; text-align:center; margin-top:-5px; margin-bottom:10px;">estás navegando como invitado</p>
                     <hr>
-                    <a href="html/login.html?return=index.html">iniciar sesión</a>
-                    <a href="html/registro.html">crear una cuenta</a>
+                    <a href="login.html?return=principal.html">iniciar sesión</a>
+                    <a href="registro.html">crear una cuenta</a>
                 `;
             } else {
                 let enlacesExtra = '';
                 if (rolactual === 'vendedor') {
-                    enlacesExtra = `<a href="html/mis_productos.html" style="color:#bc6c25; font-weight:bold;">📦 gestionar mis productos</a>`;
+                    enlacesExtra = `<a href="mis_productos.html" style="color:#bc6c25; font-weight:bold;">📦 gestionar mis productos</a>`;
                     const btnAgregar = document.getElementById('botonagregarprod');
                     if (btnAgregar) btnAgregar.classList.remove('oculto');
                 } else if (rolactual === 'admin') {
-                    enlacesExtra = `<a href="html/admin.html" style="color:#d90429; font-weight:bold;">⚙️ panel de administrador</a>`;
+                    enlacesExtra = `<a href="admin.html" style="color:#d90429; font-weight:bold;">⚙️ panel de administrador</a>`;
                 }
 
                 menuPerfil.innerHTML = `
@@ -188,8 +187,8 @@
                     <p style="font-size:0.75rem; color:#666; text-align:center; margin-top:-5px; margin-bottom:10px;">(${escapeHTML(rolactual)})</p>
                     <hr>
                     ${enlacesExtra}
-                    <a href="html/perfil.html">editar mi perfil</a>
-                    <a href="html/pedidos.html">mis compras / historial</a>
+                    <a href="perfil.html">editar mi perfil</a>
+                    <a href="pedidos.html">mis compras / historial</a>
                     <hr>
                     <a href="#" id="botoncerrarsesion" style="color: #d90429; font-weight: bold;">cerrar sesión</a>
                 `;
@@ -225,24 +224,24 @@
             } else if (rolactual === 'comprador') {
                 tituloServicios.textContent = 'atención al cliente ▼';
                 menuServicios.innerHTML = `
-                    <a href="html/soporte.html">centro de ayuda (PQR)</a>
+                    <a href="soporte.html">centro de ayuda (PQR)</a>
                     <a href="#" onclick="abrirModalCalificar(event)">⭐ calificar FeriApp</a>
                 `;
             } else if (rolactual === 'vendedor') {
                 tituloServicios.textContent = 'herramientas B2B ▼';
                 menuServicios.innerHTML = `
-                    <a href="html/asesoria.html">🌱 asesoría agrícola</a>
-                    <a href="html/logistica.html">🚚 logística y fletes</a>
-                    <a href="html/proveedores.html">🏭 proveedores de insumos</a>
-                    <a href="html/soporte.html">🎧 soporte técnico</a>
+                    <a href="asesoria.html">🌱 asesoría agrícola</a>
+                    <a href="logistica.html">🚚 logística y fletes</a>
+                    <a href="proveedores.html">🏭 proveedores de insumos</a>
+                    <a href="soporte.html">🎧 soporte técnico</a>
                 `;
             } else if (rolactual === 'admin') {
                 tituloServicios.textContent = 'accesos rápidos ▼';
-                menuServicios.innerHTML = `<a href="html/admin.html">⚙️ ir al panel de control</a>`;
+                menuServicios.innerHTML = `<a href="admin.html">⚙️ ir al panel de control</a>`;
             }
         }
 
-    // 5. MODAL PARA CALIFICAR APP
+// 5. MODAL PARA CALIFICAR APP
     if (!document.getElementById('modal-calificar-app')) {
         const modalDiv = document.createElement('div');
         modalDiv.id = 'modal-calificar-app';
@@ -440,37 +439,9 @@
         // Comprar: el catálogo es público, pero añadir al carrito requiere sesión.
         if (e.target.classList.contains('botoncomprar')) {
             e.stopPropagation();
-            const tarj = e.target.closest('.tarjeta');
-            if (!tarj) return;
-
-            const productoId = tarj.getAttribute('data-id');
-            const inventory = safeParse(localStorage.getItem('catalogo_v3'), []);
-            const producto = inventory.find((item) => item.id === productoId);
-            if (!producto) {
-                alert('No se pudo encontrar el producto.', true);
-                return;
-            }
-
-            if (!getSession()) {
-                localStorage.setItem('feriapp_accion_pendiente', JSON.stringify({
-                    type: 'add_to_cart',
-                    productId: producto.id
-                }));
-                window.location.href = buildLoginUrl('index.html', 'cart');
-                return;
-            }
-
-            const carrito = getCart();
-            carrito.push({
-                id: producto.id,
-                nombre: producto.nombre,
-                precio: Number(producto.precio) || 0,
-                imagen: producto.imagen || '',
-                categoria: producto.categoria || ''
-            });
-            setCart(carrito);
-            actualizarContadorCarrito();
-            alert('¡' + producto.nombre + ' añadido al carrito!');
+            // La compra se hace en el catálogo nuevo: allí el cliente elige la cantidad y separa el pedido.
+            window.location.href = 'catalogo.html';
+            return;
         }
 
         // Modal Vendedor

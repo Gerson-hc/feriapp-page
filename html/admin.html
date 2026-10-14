@@ -1,241 +1,326 @@
+<!-- FeriApp - Equipo GAES 3 - SENA ADSO - Ficha 3478080 -->
+<!-- Alineado con el documento de arquitectura V3 y los casos de uso aprobados. -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard - Feriapp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de administración - Feriapp</title>
     <link rel="stylesheet" href="../css/principal.css">
     <style>
-        .admin-nav { display: flex; gap: 10px; margin-bottom: 20px; }
-        .admin-nav button { padding: 10px 20px; border: none; background: #eee; cursor: pointer; border-radius: 4px; font-weight: bold; color: #666; transition: 0.3s; }
-        .admin-nav button.activo { background: #bc6c25; color: white; }
-        .panel-seccion { display: none; }
-        .panel-seccion.activo { display: block; animation: fadeIn 0.4s; }
+        .admin-nav { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-bottom: var(--space-3); }
+        .admin-nav button { padding: 10px 20px; border: none; background: var(--color-surface-hover); cursor: pointer; border-radius: var(--radius-sm); font-weight: bold; color: var(--color-text-muted); }
+        .admin-nav button.activo { background: var(--color-accent); color: #fff; }
+        .panel-seccion { display: none; overflow-x: auto; }
+        .panel-seccion.activo { display: block; }
+        .buscador { padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); width: 100%; margin-bottom: var(--space-2); }
+        .acciones { display: flex; flex-wrap: wrap; gap: 6px; }
+        .acciones button { border: 0; border-radius: var(--radius-sm); padding: 6px 12px; cursor: pointer; font-weight: bold; color: #fff; background: var(--color-primary); }
+        .acciones .peligro { background: var(--color-danger); }
+        .acciones .aviso { background: var(--color-accent); }
+        .acciones button:disabled { background: #ccc; cursor: not-allowed; }
+        .badge-ok { color: var(--color-primary); font-weight: bold; }
+        .badge-no { color: var(--color-danger); font-weight: bold; }
+        .resena { background: var(--color-surface); padding: var(--space-2); border-radius: var(--radius-sm); margin-bottom: var(--space-1); border-left: 4px solid var(--color-accent); }
+        .cajamodal.ancha { max-width: 480px; }
+        .cajamodal.ancha dl { display: grid; grid-template-columns: 140px 1fr; gap: 6px 10px; font-size: var(--text-sm); }
+        .cajamodal.ancha dt { color: var(--color-text-muted); }
+        .vacio { color: var(--color-text-muted); }
     </style>
 </head>
 <body>
     <div class="contenedorinterno" style="max-width: 1400px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; background: #2d5a27; padding: 20px; border-radius: 8px; color: white; margin-bottom: 30px;">
-            <h1 style="margin: 0;">⚙️ panel central (modo dios)</h1>
-            <a href="../index.html" class="botonaccion" style="background: white; color: #2d5a27;">salir al catálogo</a>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-1); background: var(--color-primary); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); color: white; margin-bottom: var(--space-3);">
+            <h1 style="margin: 0;">⚙️ panel de administración</h1>
+            <div style="display: flex; gap: var(--space-1);">
+                <a href="../index.html" class="botonaccion" style="background: white; color: var(--color-primary);">salir al inicio</a>
+                <a href="#" id="salir" class="botonaccion" style="background: var(--color-danger);">cerrar sesión</a>
+            </div>
         </div>
 
+        <!-- RESUMEN -->
         <div class="grillaresumen">
-            <div class="tarjetaresumen"><h3>Ventas Totales</h3><p id="admin-ventas">$0</p></div>
-            <div class="tarjetaresumen" style="border-left-color: #2d5a27;"><h3>Nota Feriapp</h3><p id="admin-nota">0.0 ⭐</p></div>
-            <div class="tarjetaresumen" style="border-left-color: #ffb703;"><h3>Usuarios Activos</h3><p id="admin-users-count">0</p></div>
+            <div class="tarjetaresumen"><h3>Ventas totales</h3><p id="admin-ventas">$0</p></div>
+            <div class="tarjetaresumen" style="border-left-color: var(--color-primary);"><h3>Nota FeriApp</h3><p id="admin-nota">—</p></div>
+            <div class="tarjetaresumen" style="border-left-color: var(--color-rating);"><h3>Usuarios activos</h3><p id="admin-users-count">0</p></div>
         </div>
 
         <div class="layoutpanel">
-            <section class="contenidopanel" style="flex: 2;">
-                <!-- Navegación interna del Admin -->
+            <section class="contenidopanel" style="flex: 2; min-width: 0;">
                 <div class="admin-nav">
-                    <button class="activo" onclick="cambiarPestaña('sec-productos', this)">📦 Gestión de Productos</button>
-                    <button onclick="cambiarPestaña('sec-usuarios', this)">👥 Control de Usuarios</button>
-                    <button onclick="cambiarPestaña('sec-resenas', this)">⭐ Reseñas de la App</button>
+                    <button class="activo" data-sec="sec-productos">📦 Productos</button>
+                    <button data-sec="sec-usuarios">👥 Usuarios</button>
+                    <button data-sec="sec-resenas">⭐ Reseñas de la app</button>
                 </div>
 
-                <!-- SECCIÓN 1: PRODUCTOS -->
+                <!-- PRODUCTOS (lista productos de datos.js + estado de feriapp_inventario) -->
                 <div id="sec-productos" class="panel-seccion activo">
-                    <input type="text" id="admin-buscar" placeholder="🔍 Buscar producto..." style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; width: 100%; margin-bottom: 15px;">
+                    <input type="text" id="admin-buscar" class="buscador" placeholder="🔍 Buscar producto o local...">
                     <table class="tabladatos" id="tabla-admin-prod">
-                        <thead><tr><th>ID</th><th>Nombre</th><th>Precio</th><th>Acciones</th></tr></thead>
+                        <thead><tr><th>Nombre</th><th>Local</th><th>Categoría</th><th>Precio</th><th>Existencias</th><th>Estado</th><th>Acciones</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
 
-                <!-- SECCIÓN 2: USUARIOS (NUEVO) -->
+                <!-- USUARIOS (feriapp_usuarios_bd) -->
                 <div id="sec-usuarios" class="panel-seccion">
-                    <p style="color: #666; margin-bottom: 15px;">Suspende o elimina cuentas que incumplan las normas.</p>
+                    <p class="vacio" style="margin-bottom: var(--space-2);">Suspende, reactiva, cambia el rol o elimina cuentas. Tu propia cuenta no se puede modificar desde aquí.</p>
                     <table class="tabladatos" id="tabla-admin-users">
-                        <thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+                        <thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
 
-                <!-- SECCIÓN 3: RESEÑAS DE LA APP (NUEVO) -->
+                <!-- RESEÑAS (feriapp_ratings: las que hacen los clientes sobre la app) -->
                 <div id="sec-resenas" class="panel-seccion">
-                    <p style="color: #666; margin-bottom: 15px;">Esto es lo que piensan los clientes de tu plataforma.</p>
+                    <p class="vacio" style="margin-bottom: var(--space-2);">Lo que opinan los clientes de la plataforma.</p>
                     <div id="lista-resenas-app"></div>
                 </div>
             </section>
         </div>
     </div>
 
+    <!-- MODAL: detalle de producto -->
+    <div id="modal-producto" class="fondomodal">
+        <div class="cajamodal ancha">
+            <span class="cerrarmodal" data-cerrar="modal-producto">&times;</span>
+            <h2 id="mp-titulo" style="color: var(--color-primary); margin-bottom: var(--space-2);"></h2>
+            <dl id="mp-datos"></dl>
+        </div>
+    </div>
+
+    <!-- MODAL: cambiar rol -->
+    <div id="modal-rol" class="fondomodal">
+        <div class="cajamodal ancha">
+            <span class="cerrarmodal" data-cerrar="modal-rol">&times;</span>
+            <h2 style="color: var(--color-primary); margin-bottom: var(--space-1);">Cambiar rol</h2>
+            <p id="mr-usuario" class="vacio" style="margin-bottom: var(--space-2);"></p>
+            <label for="mr-rol"><strong>rol</strong></label>
+            <select id="mr-rol" style="margin-top: 5px;">
+                <option value="comprador">comprador</option>
+                <option value="vendedor">vendedor</option>
+                <option value="admin">admin</option>
+            </select>
+            <div id="mr-productor-caja" class="oculto">
+                <label for="mr-productor"><strong>vendedor que gestiona</strong></label>
+                <select id="mr-productor" style="margin-top: 5px;"></select>
+            </div>
+            <button id="mr-guardar" class="botonaccion" style="width: 100%;">guardar</button>
+        </div>
+    </div>
+
     <script src="../js/principal.js"></script>
+    <script src="../js/datos.js"></script>
     <script>
-        // Navegación por pestañas
-        function cambiarPestaña(idSeccion, boton) {
+        const esc = FeriApp.escapeHTML;
+        const sesionAdmin = FeriSesion.actual();
+        const miId = sesionAdmin ? String(sesionAdmin.id) : '';
+        const cop = n => '$' + Math.round(n).toLocaleString('es-CO');
+        const prom = a => a.length ? a.reduce((s, v) => s + v, 0) / a.length : null;
+        let usuarioEnRol = null;
+
+        // Cambia de pestaña (productos, usuarios, reseñas).
+        function cambiarPestana(idSeccion, boton) {
             document.querySelectorAll('.panel-seccion').forEach(s => s.classList.remove('activo'));
             document.querySelectorAll('.admin-nav button').forEach(b => b.classList.remove('activo'));
             document.getElementById(idSeccion).classList.add('activo');
             boton.classList.add('activo');
         }
 
-        // Usuarios de demostración: en esta etapa viven solo en memoria.
-        // La autenticación real todavía NO guarda cuentas en localStorage.
-        let usuariosAdminDemo = [
-            { id: 'U1', nombre: 'Juan Comprador', rol: 'comprador', estado: 'activo' },
-            { id: 'U2', nombre: 'Finca Los Pinos', rol: 'vendedor', estado: 'activo' },
-            { id: 'U3', nombre: 'Estafador123', rol: 'vendedor', estado: 'suspendido' }
-        ];
+        // Abre o cierra un modal por id.
+        const abrirModal = id => { document.getElementById(id).style.display = 'flex'; };
+        const cerrarModal = id => { document.getElementById(id).style.display = 'none'; };
 
-        function cargarAdmin(filtro = '') {
-           // 1. CARGAR PRODUCTOS
-            const inventario = FeriApp.safeParse(localStorage.getItem('catalogo_v3'), []);
-            const tablaProd = document.querySelector('#tabla-admin-prod tbody');
-
-            let ventasTotales = 0;
-            Object.keys(localStorage).forEach((key) => {
-                if (!key.startsWith('historialpedidos_')) return;
-                const pedidos = FeriApp.safeParse(localStorage.getItem(key), []);
-                if (Array.isArray(pedidos)) pedidos.forEach((pedido) => { ventasTotales += Number(pedido.total) || 0; });
-            });
-            const historialLegacy = FeriApp.safeParse(localStorage.getItem('historialpedidos'), []);
-            if (Array.isArray(historialLegacy)) historialLegacy.forEach((pedido) => { ventasTotales += Number(pedido.total) || 0; });
-            document.getElementById('admin-ventas').textContent = '$' + ventasTotales.toLocaleString('es-CO');
-            tablaProd.innerHTML = '';
-            
-            let prodsFiltrados = inventario.filter(p => p.nombre.toLowerCase().includes(filtro.toLowerCase()));
-            prodsFiltrados.forEach(p => {
-                tablaProd.innerHTML += `
-                    <tr>
-                        <td style="color:#666; font-size:0.8rem;">${p.id}</td>
-                        <td style="font-weight:bold;">${p.nombre}</td>
-                        <td>$${p.precio.toLocaleString('es-CO')}</td>
-                        <td>
-                            <div style="display: flex; gap: 8px;">
-                                <button style="background-color: #072e58; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'" onclick="verDetalleProducto('${p.id}')">👁️ Ver</button>
-                                <button style="background-color: #d90429; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'" onclick="banearProducto('${p.id}')">🚫 Banear</button>
-                            </div>
-                        </td>
-                    </tr>`;
-            });
-
-            // 2. CARGAR USUARIOS
-            const usuarios = Array.isArray(usuariosAdminDemo) ? usuariosAdminDemo : [];
-            document.getElementById('admin-users-count').textContent = usuarios.length;
-            const tablaUsr = document.querySelector('#tabla-admin-users tbody');
-            tablaUsr.innerHTML = '';
-            
-            usuarios.forEach(u => {
-                let badgeEstado = u.estado === 'activo' ? '<span style="color:green; font-weight:bold;">🟢 Activo</span>' : '<span style="color:red; font-weight:bold;">🔴 Suspendido</span>';
-                let btnAccion = u.estado === 'activo' 
-                    ? `<button class="btn-eliminar" onclick="cambiarEstadoUsuario('${u.id}', 'suspendido')">Suspender</button>`
-                    : `<button class="botonaccion" style="background:green;" onclick="cambiarEstadoUsuario('${u.id}', 'activo')">Restaurar</button>`;
-
-                tablaUsr.innerHTML += `
-                    <tr>
-                        <td style="font-weight:bold;">${u.nombre}</td>
-                        <td style="text-transform: capitalize;">${u.rol}</td>
-                        <td>${badgeEstado}</td>
-                        <td>${btnAccion}</td>
-                    </tr>`;
-            });
-
-            // 3. CARGAR RESEÑAS DE LA APP
-            const reseñasApp = FeriApp.safeParse(localStorage.getItem('feriapp_ratings'), []);
-            const contReseñas = document.getElementById('lista-resenas-app');
-            contReseñas.innerHTML = reseñasApp.length === 0 ? "<p>No hay reseñas todavía.</p>" : "";
-            
-            let sumaNotas = 0;
-            reseñasApp.forEach(r => {
-                sumaNotas += r.nota;
-                let estrellas = "⭐".repeat(r.nota);
-                contReseñas.innerHTML += `
-                    <div style="background:#f9f9f9; padding:15px; border-radius:4px; margin-bottom:10px; border-left: 4px solid #bc6c25;">
-                        <h4 style="margin-bottom:5px;">${r.user} <span style="font-weight:normal; color:#666; font-size:0.8rem;">(${r.fecha})</span></h4>
-                        <p style="color:#ffb703; margin-bottom:5px;">${estrellas}</p>
-                        <p style="color:#333; font-size:0.9rem;">"${r.comentario}"</p>
-                    </div>`;
-            });
-
-            if (reseñasApp.length > 0) {
-                let prom = (sumaNotas / reseñasApp.length).toFixed(1);
-                document.getElementById('admin-nota').textContent = prom + " ⭐";
-            }
+        // ---------- RESUMEN ----------
+        // Ventas totales = suma de feriapp_ventas (sin las canceladas); nota = promedio de feriapp_ratings;
+        // usuarios activos = usuarios de feriapp_usuarios_bd con estado "activo".
+        function pintarResumen() {
+            const ventas = FeriStore.leer('feriapp_ventas', []).filter(v => v.estado !== 'cancelada');
+            document.getElementById('admin-ventas').textContent = cop(ventas.reduce((s, v) => s + (Number(v.total) || 0), 0));
+            const notas = FeriStore.leer('feriapp_ratings', []).map(r => Number(r.nota) || 0);
+            document.getElementById('admin-nota').textContent = notas.length ? prom(notas).toFixed(1) + ' ⭐' : 'sin reseñas';
+            document.getElementById('admin-users-count').textContent = FeriUsuarios.leer().filter(u => u.estado === 'activo').length;
         }
 
-      // Función para ver los detalles del producto en el panel Admin (MINI CARTA VISUAL)
-        window.verDetalleProducto = function(id) {
-            let inv = FeriApp.safeParse(localStorage.getItem('catalogo_v3'), []);
-            let producto = inv.find(p => p.id === id);
-            
-            if(!producto) {
-                alert("Error: Producto no encontrado.");
-                return;
-            }
+        // ---------- PRODUCTOS ----------
+        // Texto del estado de un producto en el panel.
+        function estadoProducto(p) {
+            if (p.baneado || !p.activo) return '<span class="badge-no">inactivo</span>';
+            return '<span class="badge-ok">activo</span>';
+        }
 
-            // 1. Crear el fondo del modal si no existe en el HTML
-            let modalCarta = document.getElementById('modal-minicarta-admin');
-            if (!modalCarta) {
-                modalCarta = document.createElement('div');
-                modalCarta.id = 'modal-minicarta-admin';
-                modalCarta.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(7, 46, 88, 0.7); display:flex; justify-content:center; align-items:center; z-index:9999;';
-                document.body.appendChild(modalCarta);
-            }
+        // Dibuja la tabla de productos de datos.js (con el estado guardado en feriapp_inventario).
+        function pintarProductos(filtro = '') {
+            const f = filtro.trim().toLowerCase();
+            const lista = productos.filter(p => {
+                const l = locales.find(x => x.id === p.local);
+                return !f || p.nombre.toLowerCase().includes(f) || l.nombre.toLowerCase().includes(f);
+            });
+            document.querySelector('#tabla-admin-prod tbody').innerHTML = lista.length ? lista.map(p => {
+                const l = locales.find(x => x.id === p.local);
+                const accion = (p.baneado || !p.activo)
+                    ? `<button class="aviso" data-reactivar="${p.id}">▶️ reactivar</button>`
+                    : `<button class="peligro" data-desactivar="${p.id}">⏸️ desactivar</button>`;
+                return `<tr>
+                    <td style="font-weight:bold;">${esc(p.nombre)}</td>
+                    <td>${esc(l.codigo)} · ${esc(l.nombre)}</td>
+                    <td>${esc(categorias[p.cat])}</td>
+                    <td>${cop(p.precio)} / ${esc(p.u)}</td>
+                    <td>${fmtCant(p.cant)} ${esc(p.u)}</td>
+                    <td>${estadoProducto(p)}</td>
+                    <td><div class="acciones"><button data-ver="${p.id}">👁️ ver</button>${accion}</div></td>
+                </tr>`;
+            }).join('') : '<tr><td colspan="7" class="vacio">Sin resultados.</td></tr>';
+        }
 
-            // 2. Determinar si tiene foto real o usamos el icono por defecto
-            let htmlVisual = producto.imagen 
-                ? `<img src="${producto.imagen}" style="width:100%; height:180px; object-fit:cover; border-radius:12px 12px 0 0;">` 
-                : `<div style="width:100%; height:180px; background:#f4f6f8; display:flex; justify-content:center; align-items:center; font-size:5rem; border-radius:12px 12px 0 0;">${producto.icono || '📦'}</div>`;
+        // Muestra el detalle de un producto en un modal.
+        function verProducto(id) {
+            const p = productos.find(x => x.id === id), l = locales.find(x => x.id === p.local), pz = plazas.find(x => x.id === l.plaza);
+            const pp = prom(p.calif), est = Inventario.estado(p);
+            document.getElementById('mp-titulo').textContent = iconosCategoria[p.cat] + ' ' + p.nombre;
+            document.getElementById('mp-datos').innerHTML = `
+                <dt>Local</dt><dd>${esc(l.codigo)} · ${esc(l.nombre)}</dd>
+                <dt>Plaza</dt><dd>${esc(pz.nombre)}</dd>
+                <dt>Vendedor</dt><dd>${l.productor ? esc(productores[l.productor]) : '—'}</dd>
+                <dt>Categoría</dt><dd>${esc(categorias[p.cat])}</dd>
+                <dt>Precio</dt><dd>${cop(p.precio)} por ${esc(p.u)}</dd>
+                <dt>Existencias</dt><dd>${fmtCant(p.cant)} ${esc(p.u)} (${est})</dd>
+                <dt>Stock mínimo</dt><dd>${fmtCant(p.min)} ${esc(p.u)}</dd>
+                <dt>Venta por</dt><dd>múltiplos de ${fmtCant(Inventario.paso(p.u))} ${esc(p.u)}</dd>
+                <dt>Calificación</dt><dd>${pp ? '★ ' + pp.toFixed(1) + ' (' + p.calif.length + ')' : 'sin calificaciones'}</dd>
+                <dt>Estado</dt><dd>${estadoProducto(p)}</dd>
+                <dt>Actualizado</dt><dd>${new Date(p.fecha).toLocaleString('es-CO')}</dd>`;
+            abrirModal('modal-producto');
+        }
 
-            // 3. Simular reseñas para mantener el aspecto de tienda
-            let numResenas = Math.floor(Math.random() * 40) + 12; // Número aleatorio de reseñas
+        // Desactivar: retira el producto del catálogo (activo = 0, marca interna baneado = 1 para que el vendedor no lo reactive) y lo guarda.
+        function desactivarProducto(id) {
+            const p = productos.find(x => x.id === id);
+            if (!confirm(`¿Desactivar ${p.nombre}? El producto dejará de mostrarse, pero puedes reactivarlo después.`)) return;
+            p.activo = 0; p.baneado = 1; p.fecha = new Date().toISOString();
+            Inventario._guardar();
+            pintarProductos(document.getElementById('admin-buscar').value);
+        }
 
-            // 4. Inyectar el diseño de la Mini Carta
-            modalCarta.innerHTML = `
-                <div style="background:white; width:340px; border-radius:12px; box-shadow:0 15px 30px rgba(0,0,0,0.3); position:relative; text-align:left; animation: fadeIn 0.3s ease-out;">
-                    <!-- Botón Cerrar -->
-                    <span onclick="document.getElementById('modal-minicarta-admin').style.display='none'" style="position:absolute; top:10px; right:10px; font-size:1.5rem; cursor:pointer; color:#333; background:rgba(255,255,255,0.9); border-radius:50%; width:32px; height:32px; display:flex; justify-content:center; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.2); z-index:10;">&times;</span>
-                    
-                    ${htmlVisual}
-                    
-                    <div style="padding: 20px;">
-                        <span style="background:#fb6e0b; color:white; padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px;">${producto.categoria}</span>
-                        
-                        <h3 style="color:#072e58; margin:12px 0 5px 0; font-size:1.4rem;">${producto.nombre}</h3>
-                        
-                        <p style="color:#ffb703; font-size:0.95rem; margin-bottom:12px;">⭐⭐⭐⭐⭐ <span style="color:#666; font-size:0.85rem;">(${numResenas} reseñas)</span></p>
-                        
-                        <p style="color:#555; font-size:0.9rem; margin-bottom:20px; line-height:1.5; height:60px; overflow-y:auto; padding-right:5px;">${producto.desc}</p>
-                        
-                        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #eee; padding-top:15px;">
-                            <span style="font-size:1.4rem; font-weight:bold; color:#34833c;">$${producto.precio.toLocaleString('es-CO')}</span>
-                            <span style="color:#999; font-size:0.8rem; font-weight:bold;">ID: ${producto.id}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            modalCarta.style.display = 'flex';
-        };
+        // Reactivar: vuelve a mostrar el producto en el catálogo.
+        function reactivarProducto(id) {
+            const p = productos.find(x => x.id === id);
+            if (!confirm(`¿Reactivar ${p.nombre}? Volverá a mostrarse en el catálogo.`)) return;
+            p.activo = 1; p.baneado = 0; p.fecha = new Date().toISOString();
+            Inventario._guardar();
+            pintarProductos(document.getElementById('admin-buscar').value);
+        }
 
-        window.banearProducto = function(id) {
-            const inventario = FeriApp.safeParse(localStorage.getItem('catalogo_v3'), []);
-            const producto = inventario.find((item) => item.id === id);
-            if (!producto) {
-                alert('Producto no encontrado.', true);
-                return;
-            }
+        // ---------- USUARIOS ----------
+        // Dibuja la tabla de usuarios leída de feriapp_usuarios_bd.
+        function pintarUsuarios() {
+            const usuarios = FeriUsuarios.leer();
+            document.querySelector('#tabla-admin-users tbody').innerHTML = usuarios.length ? usuarios.map(u => {
+                const yo = String(u.id) === miId, activo = u.estado === 'activo';
+                const dis = yo ? 'disabled title="No puedes modificar tu propia cuenta"' : '';
+                const extra = u.rol === 'vendedor' ? ` <span class="vacio">(${u.productor ? esc(productores[u.productor] || 'vendedor ' + u.productor) : 'sin vendedor'})</span>` : '';
+                return `<tr>
+                    <td style="font-weight:bold;">${esc(u.nombre)}${yo ? ' <span class="vacio">(tú)</span>' : ''}</td>
+                    <td>${esc(u.correo)}</td>
+                    <td style="text-transform: capitalize;">${esc(u.rol)}${extra}</td>
+                    <td>${activo ? '<span class="badge-ok">🟢 activo</span>' : '<span class="badge-no">🔴 inactivo</span>'}</td>
+                    <td><div class="acciones">
+                        ${activo ? `<button class="aviso" data-suspender="${esc(u.id)}" ${dis}>suspender</button>` : `<button data-reactivar-u="${esc(u.id)}" ${dis}>reactivar</button>`}
+                        <button data-rol="${esc(u.id)}" ${dis}>cambiar rol</button>
+                        <button class="peligro" data-eliminar="${esc(u.id)}" ${dis}>eliminar</button>
+                    </div></td>
+                </tr>`;
+            }).join('') : '<tr><td colspan="5" class="vacio">No hay usuarios registrados.</td></tr>';
+            pintarResumen();
+        }
 
-            if (!confirm(`¿Deseas retirar "${producto.nombre}" del catálogo?`)) return;
+        // Cuántos admin activos hay (para no dejar el sistema sin administrador).
+        const adminsActivos = () => FeriUsuarios.leer().filter(u => u.rol === 'admin' && u.estado === 'activo').length;
 
-            const nuevoInventario = inventario.filter((item) => item.id !== id);
-            localStorage.setItem('catalogo_v3', JSON.stringify(nuevoInventario));
-            alert('Producto retirado del catálogo.');
-            cargarAdmin(document.getElementById('admin-buscar').value);
-        };
+        // Cambia el estado del usuario a "inactivo" (suspender) o "activo" (reactivar) y lo guarda.
+        function cambiarEstadoUsuario(id, nuevoEstado) {
+            const usuarios = FeriUsuarios.leer(), u = usuarios.find(x => String(x.id) === String(id));
+            if (!u || String(u.id) === miId) return;
+            if (nuevoEstado === 'inactivo' && u.rol === 'admin' && adminsActivos() <= 1) { alert('Debe quedar al menos un administrador activo.'); return; }
+            u.estado = nuevoEstado;
+            FeriUsuarios.guardar(usuarios);
+            pintarUsuarios();
+        }
 
-        window.cambiarEstadoUsuario = function(id, nuevoEstado) {
-            const i = usuariosAdminDemo.findIndex(u => u.id === id);
-            if (i !== -1) {
-                usuariosAdminDemo[i].estado = nuevoEstado;
-                cargarAdmin();
-            }
-        };
+        // Abre el modal para cambiar el rol (si es vendedor se elige el productor que gestiona).
+        function abrirCambioRol(id) {
+            usuarioEnRol = FeriUsuarios.buscarPorId(id);
+            if (!usuarioEnRol) return;
+            document.getElementById('mr-usuario').textContent = `${usuarioEnRol.nombre} · ${usuarioEnRol.correo}`;
+            document.getElementById('mr-rol').value = usuarioEnRol.rol;
+            document.getElementById('mr-productor').innerHTML = Object.entries(productores).map(([i, n]) => `<option value="${i}">${esc(n)}</option>`).join('');
+            if (usuarioEnRol.productor) document.getElementById('mr-productor').value = usuarioEnRol.productor;
+            alternarProductor();
+            abrirModal('modal-rol');
+        }
 
-        document.getElementById('admin-buscar').addEventListener('input', (e) => cargarAdmin(e.target.value));
-        cargarAdmin();
+        // Muestra el selector de productor solo cuando el rol elegido es vendedor.
+        function alternarProductor() {
+            document.getElementById('mr-productor-caja').classList.toggle('oculto', document.getElementById('mr-rol').value !== 'vendedor');
+        }
+
+        // Guarda el nuevo rol (y el productor si es vendedor).
+        function guardarRol() {
+            const usuarios = FeriUsuarios.leer(), u = usuarios.find(x => String(x.id) === String(usuarioEnRol.id));
+            const rol = document.getElementById('mr-rol').value;
+            if (u.rol === 'admin' && rol !== 'admin' && adminsActivos() <= 1) { alert('Debe quedar al menos un administrador activo.'); return; }
+            u.rol = rol;
+            u.productor = rol === 'vendedor' ? Number(document.getElementById('mr-productor').value) : null;
+            FeriUsuarios.guardar(usuarios);
+            cerrarModal('modal-rol');
+            pintarUsuarios();
+        }
+
+        // Elimina un usuario tras confirmar.
+        function eliminarUsuario(id) {
+            const usuarios = FeriUsuarios.leer(), u = usuarios.find(x => String(x.id) === String(id));
+            if (!u || String(u.id) === miId) return;
+            if (u.rol === 'admin' && u.estado === 'activo' && adminsActivos() <= 1) { alert('Debe quedar al menos un administrador activo.'); return; }
+            if (!confirm(`¿Eliminar la cuenta de ${u.nombre}? Esta acción no se puede deshacer.`)) return;
+            FeriUsuarios.guardar(usuarios.filter(x => String(x.id) !== String(id)));
+            pintarUsuarios();
+        }
+
+        // ---------- RESEÑAS ----------
+        // Dibuja las reseñas de la app (feriapp_ratings).
+        function pintarResenas() {
+            const resenas = FeriStore.leer('feriapp_ratings', []);
+            document.getElementById('lista-resenas-app').innerHTML = resenas.length ? resenas.slice().reverse().map(r => `
+                <div class="resena">
+                    <h4 style="margin-bottom:5px;">${esc(r.user)} <span style="font-weight:normal; color:#666; font-size:0.8rem;">(${esc(r.fecha)})</span></h4>
+                    <p style="color: var(--color-rating); margin-bottom:5px;">${'⭐'.repeat(Number(r.nota) || 0)}</p>
+                    <p style="font-size:0.9rem;">"${esc(r.comentario)}"</p>
+                </div>`).join('') : '<p class="vacio">No hay reseñas todavía.</p>';
+        }
+
+        // ---------- EVENTOS ----------
+        document.querySelector('.admin-nav').addEventListener('click', e => { const b = e.target.closest('button'); if (b) cambiarPestana(b.dataset.sec, b); });
+        document.getElementById('admin-buscar').addEventListener('input', e => pintarProductos(e.target.value));
+        document.getElementById('tabla-admin-prod').addEventListener('click', e => {
+            const b = e.target.closest('button'); if (!b) return;
+            if (b.dataset.ver) verProducto(+b.dataset.ver);
+            if (b.dataset.desactivar) desactivarProducto(+b.dataset.desactivar);
+            if (b.dataset.reactivar) reactivarProducto(+b.dataset.reactivar);
+        });
+        document.getElementById('tabla-admin-users').addEventListener('click', e => {
+            const b = e.target.closest('button'); if (!b || b.disabled) return;
+            if (b.dataset.suspender) cambiarEstadoUsuario(b.dataset.suspender, 'inactivo');
+            if (b.dataset.reactivarU) cambiarEstadoUsuario(b.dataset.reactivarU, 'activo');
+            if (b.dataset.rol) abrirCambioRol(b.dataset.rol);
+            if (b.dataset.eliminar) eliminarUsuario(b.dataset.eliminar);
+        });
+        document.querySelectorAll('[data-cerrar]').forEach(x => x.addEventListener('click', () => cerrarModal(x.dataset.cerrar)));
+        document.querySelectorAll('.fondomodal').forEach(f => f.addEventListener('click', e => { if (e.target === f) f.style.display = 'none'; }));
+        document.getElementById('mr-rol').addEventListener('change', alternarProductor);
+        document.getElementById('mr-guardar').addEventListener('click', guardarRol);
+        document.getElementById('salir').addEventListener('click', e => { e.preventDefault(); FeriApp.logout(); });
+
+        pintarResumen(); pintarProductos(); pintarUsuarios(); pintarResenas();
     </script>
 </body>
 </html>

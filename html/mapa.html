@@ -1,3 +1,5 @@
+<!-- FeriApp - Equipo GAES 3 - SENA ADSO - Ficha 3478080 -->
+<!-- Alineado con el documento de arquitectura V3 y los casos de uso aprobados. -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -43,8 +45,16 @@
             <a href="catalogo.html" class="enlacenav">catálogo</a>
             <a href="mapa.html" class="enlacenav">mapa</a>
             <a href="contacto.html" class="enlacenav">contacto</a>
-            <a href="login.html" id="enlacesesion" class="enlacenav">iniciar sesión</a>
         </nav>
+        <div class="contenedornaviconos">
+            <a href="catalogo.html#pedido" class="botonperfil" aria-label="Ver mi pedido">
+                🛒<span id="contadorcarrito" class="contadorcarrito" style="display: none;">0</span>
+            </a>
+            <div class="contenedorperfil">
+                <button id="botonperfil" class="botonperfil" aria-label="Menú de perfil">👤</button>
+                <div id="menuperfil" class="menuperfil"></div>
+            </div>
+        </div>
     </header>
 
     <div class="contenedorinterno">
@@ -57,7 +67,7 @@
             <div class="leyenda">
                 <span class="l-abierto">abierto</span>
                 <span class="l-cerrado">cerrado</span>
-                <span class="l-disponible">disponible (sin productor)</span>
+                <span class="l-disponible">disponible (sin vendedor)</span>
             </div>
         </div>
 
@@ -70,15 +80,20 @@
         <p class="nota-datos">Datos de ejemplo tomados del script SQL del documento de arquitectura (anexo A). Con la API REST vendrán de las tablas plaza, local_comercial, producto, inventario y calificacion_local.</p>
     </div>
 
+    <script src="../js/principal.js"></script>
     <script src="../js/datos.js"></script>
     <script>
     const $ = id => document.getElementById(id);
+    // Formatea un valor como pesos colombianos.
     const cop = n => '$' + n.toLocaleString('es-CO');
+    // Promedio de una lista de puntajes (null si está vacía).
     const prom = a => a.length ? a.reduce((s, v) => s + v, 0) / a.length : null;
+    // Convierte un promedio en estrellas llenas y vacías.
     const estrellas = p => '★'.repeat(Math.round(p)) + '☆'.repeat(5 - Math.round(p));
     const W = 150, H = 100, GAP = 20;
     let plazaActual = null;
 
+    // Dibuja el plano SVG de la plaza elegida; el color de cada local depende de su estado (abierto, cerrado, disponible).
     function pintarPlano() {
         const ls = locales.filter(l => l.plaza === plazaActual);
         const maxX = Math.max(...ls.map(l => l.x)), maxY = Math.max(...ls.map(l => l.y));
@@ -102,15 +117,16 @@
         $('detalle').innerHTML = '<p class="vacio">Selecciona un local en el mapa para ver su información.</p>';
     }
 
+    // Muestra el detalle del local elegido: productor, calificación promedio, productos con precio y existencias.
     function mostrar(id) {
         document.querySelectorAll('.local').forEach(g => g.classList.toggle('sel', +g.dataset.id === id));
         const l = locales.find(x => x.id === id);
-        const prods = productos.filter(p => p.local === id && p.cant > 0);
+        const prods = productos.filter(p => p.local === id && p.activo && p.cant > 0);
         const pl = prom(l.calif);
         const estadoTxt = { abierto: 'Abierto', cerrado: 'Cerrado', disponible: 'Disponible' }[l.estado];
         let h = `<h2 style="color: var(--color-primary); margin-bottom: 4px;">${l.nombre}</h2>
                  <p class="vacio">Local ${l.codigo} · ${estadoTxt}</p>
-                 <p style="margin-top: var(--space-1);"><strong>Productor:</strong> ${l.productor ? productores[l.productor] : '<span class="vacio">Este local no tiene productor asignado.</span>'}</p>
+                 <p style="margin-top: var(--space-1);"><strong>Vendedor:</strong> ${l.productor ? productores[l.productor] : '<span class="vacio">Este local no tiene vendedor asignado.</span>'}</p>
                  <p><strong>Calificación:</strong> ${pl ? `<span class="estrellas">${estrellas(pl)}</span> ${pl.toFixed(1)} (${l.calif.length})` : '<span class="vacio">Aún sin calificaciones.</span>'}</p>
                  <h3 style="margin-top: var(--space-2);">Productos disponibles</h3>`;
         if (!prods.length) {
@@ -119,17 +135,16 @@
             h += '<ul class="lista-prod">' + prods.map(p => {
                 const pp = prom(p.calif);
                 return `<li><span>${p.nombre}${pp ? ` <span class="estrellas" title="${pp.toFixed(1)}">★</span>${pp.toFixed(1)}` : ''}
-                        ${Inventario.estado(p) === 'bajo' ? '<br><span class="aviso-bajo">pocas existencias</span>' : ''}</span>
+                        <br><span class="vacio">quedan ${fmtCant(p.cant)} ${p.u}</span>${Inventario.estado(p) === 'bajo' ? ' <span class="aviso-bajo">· pocas existencias</span>' : ''}</span>
                         <strong>${cop(p.precio)}/${p.u}</strong></li>`;
             }).join('') + '</ul>';
         }
         if (l.productor && l.estado !== 'cerrado') {
-            h += '<a href="catalogo.html" class="botonaccion" style="display:block; text-align:center; margin-top: var(--space-2);">ver en el catálogo</a>';
+            h += `<a href="catalogo.html?local=${l.id}" class="botonaccion" style="display:block; text-align:center; margin-top: var(--space-2);">ver en el catálogo</a>`;
         }
         $('detalle').innerHTML = h;
     }
 
-    FeriSesion.pintarEnlace();
     // Plazas con locales; si no hay ninguna se informa (flujo alterno 2a del CU-04)
     const conLocales = plazas.filter(p => locales.some(l => l.plaza === p.id));
     if (!conLocales.length) {

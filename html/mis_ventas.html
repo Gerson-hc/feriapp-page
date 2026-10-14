@@ -1,0 +1,126 @@
+<!-- FeriApp - Equipo GAES 3 - SENA ADSO - Ficha 3478080 -->
+<!-- Alineado con el documento de arquitectura V3 y los casos de uso aprobados. -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Ventas - Feriapp</title>
+    <link rel="stylesheet" href="../css/principal.css">
+    <style>
+        .estadopedido.entregada { background: var(--color-primary-hover); }
+        .pedido-card { border: 1px solid var(--color-border); border-left: 5px solid var(--color-accent); border-radius: var(--radius-sm); padding: var(--space-2); margin-bottom: var(--space-2); background: var(--color-surface); }
+        .pedido-card.cancelada { border-left-color: var(--color-danger); }
+        .pedido-cab { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--space-2); }
+        .pedido-lineas { list-style: none; padding: 0; margin: var(--space-1) 0; font-size: var(--text-sm); color: var(--color-text-muted); }
+        .pedido-lineas li { display: flex; justify-content: space-between; gap: 10px; padding: 4px 0; border-bottom: 1px dashed var(--color-border); }
+        .pedido-acciones { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-top: var(--space-1); }
+        .btn-peligro { background: var(--color-danger); }
+        .btn-peligro:hover { background: #9e2d22; }
+        .vacio { color: var(--color-text-muted); }
+    </style>
+</head>
+<body>
+    <div class="contenedorinterno">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-1);">
+            <h1 class="titulointerno">mis ventas</h1>
+            <div style="display: flex; gap: var(--space-1);">
+                <a href="mis_productos.html" class="botonaccion">mis productos</a>
+                <a href="catalogo.html" class="botonaccion">volver al catálogo</a>
+            </div>
+        </div>
+
+        <div class="layoutpanel">
+            <section class="contenidopanel" style="flex: 1; min-width: 0;">
+                <h2 id="titulo-vendedor">ventas de tus locales</h2>
+                <p class="vacio" style="margin-bottom: var(--space-2);">Alista cada pedido y márcalo como lista cuando el cliente pueda recogerlo; luego márcalo como entregada.</p>
+                <div id="listaventas"></div>
+            </section>
+        </div>
+    </div>
+
+    <script src="../js/principal.js"></script>
+    <script src="../js/datos.js"></script>
+    <script>
+        const esc = FeriApp.escapeHTML;
+        const cop = n => '$' + Math.round(n).toLocaleString('es-CO');
+        const sesion = FeriSesion.actual();
+        const cont = document.getElementById('listaventas');
+
+        // Usuario vendedor en sesión (feriapp_usuarios_bd), buscado por id y, si falta, por correo.
+        function vendedorActual() {
+            if (!sesion) return null;
+            return (sesion.id && FeriUsuarios.buscarPorId(sesion.id)) || FeriUsuarios.buscarPorCorreo(sesion.correo);
+        }
+
+        // Ventas de feriapp_ventas cuyo local pertenece al vendedor logueado (más recientes primero).
+        function misVentas() {
+            const u = vendedorActual();
+            if (!u || !u.productor) return null;
+            const misLocales = locales.filter(l => l.productor === u.productor).map(l => l.id);
+            return FeriStore.leer('feriapp_ventas', []).filter(v => misLocales.includes(v.local)).sort((a, b) => b.id - a.id);
+        }
+
+        // Clase CSS de la etiqueta de estado.
+        const claseEstado = e => ({ registrada: 'pendiente', lista: '', entregada: 'entregada', cancelada: 'devolucion' }[e] || '');
+
+        // Dibuja las ventas con sus acciones según el estado (CU-11 Alistar compra).
+        function pintar() {
+            const ventas = misVentas();
+            if (ventas === null) { cont.innerHTML = '<p class="vacio">Tu cuenta aún no tiene un vendedor asignado. Pídele al administrador que lo configure.</p>'; return; }
+            if (!ventas.length) { cont.innerHTML = '<p class="vacio">Aún no tienes ventas registradas.</p>'; return; }
+            cont.innerHTML = ventas.map(v => {
+                const l = locales.find(x => x.id === v.local) || { codigo: '', nombre: '' };
+                const lineas = v.detalle.map(d => {
+                    const p = productos.find(x => x.id === d.producto) || { nombre: 'Producto #' + d.producto, u: '' };
+                    return `<li><span>${esc(p.nombre)} · ${fmtCant(d.cantidad)} ${esc(p.u)}</span><span>${cop(d.subtotal)}</span></li>`;
+                }).join('');
+                const acciones = v.estado === 'registrada'
+                    ? `<button class="botonaccion" data-lista="${v.id}">marcar como lista</button><button class="botonaccion btn-peligro" data-cancelar="${v.id}">cancelar</button>`
+                    : (v.estado === 'lista' ? `<button class="botonaccion" data-entregada="${v.id}">marcar como entregada</button>` : '');
+                return `<div class="pedido-card ${v.estado === 'cancelada' ? 'cancelada' : ''}">
+                    <div class="pedido-cab">
+                        <div>
+                            <h3 style="color:#2d5a27;">Venta #${v.id}</h3>
+                            <p style="font-size:0.85rem; color:#666;">📅 ${new Date(v.fecha).toLocaleString('es-CO')}</p>
+                            <p style="color:#666; margin-top:5px;">Cliente: ${esc(v.cliente_nombre || v.cliente)} · local ${esc(l.codigo)}</p>
+                        </div>
+                        <div style="text-align:right;">
+                            <p style="font-weight:bold; margin-bottom:5px;">${cop(v.total)}</p>
+                            <span class="estadopedido ${claseEstado(v.estado)}">${esc(v.estado)}</span>
+                        </div>
+                    </div>
+                    <ul class="pedido-lineas">${lineas}</ul>
+                    ${acciones ? `<div class="pedido-acciones">${acciones}</div>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        // Cambia el estado de una venta en feriapp_ventas solo si la transición es válida (registrada→lista→entregada).
+        function cambiarEstado(id, desde, hacia) {
+            const ventas = FeriStore.leer('feriapp_ventas', []), v = ventas.find(x => x.id === id);
+            if (!v || v.estado !== desde) { alert('La venta ya cambió de estado. Se actualizó la lista.'); return pintar(); }
+            v.estado = hacia;
+            FeriStore.guardar('feriapp_ventas', ventas);
+            pintar();
+        }
+
+        // Cancela la venta devolviendo las existencias con Inventario.cancelarVenta().
+        function cancelar(id) {
+            if (!confirm(`¿Cancelar la venta #${id}? Las cantidades volverán al inventario.`)) return;
+            const r = Inventario.cancelarVenta(id);
+            if (!r.ok) alert(r.msg);
+            pintar();
+        }
+
+        cont.addEventListener('click', e => {
+            const b = e.target.closest('button'); if (!b) return;
+            if (b.dataset.lista) cambiarEstado(+b.dataset.lista, 'registrada', 'lista');
+            if (b.dataset.entregada) cambiarEstado(+b.dataset.entregada, 'lista', 'entregada');
+            if (b.dataset.cancelar) cancelar(+b.dataset.cancelar);
+        });
+
+        pintar();
+    </script>
+</body>
+</html>

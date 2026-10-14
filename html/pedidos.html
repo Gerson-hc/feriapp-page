@@ -1,15 +1,33 @@
+<!-- FeriApp - Equipo GAES 3 - SENA ADSO - Ficha 3478080 -->
+<!-- Alineado con el documento de arquitectura V3 y los casos de uso aprobados. -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Compras - Feriapp</title>
     <link rel="stylesheet" href="../css/principal.css">
+    <style>
+        .estadopedido.entregada { background: var(--color-primary-hover); }
+        .pedido-card { border: 1px solid var(--color-border); border-left: 5px solid var(--color-accent); border-radius: var(--radius-sm); padding: var(--space-2); margin-bottom: var(--space-2); }
+        .pedido-card.cancelada { border-left-color: var(--color-danger); }
+        .pedido-cab { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--space-2); }
+        .pedido-lineas { list-style: none; padding: 0; margin: var(--space-1) 0; font-size: var(--text-sm); color: var(--color-text-muted); }
+        .pedido-lineas li { display: flex; justify-content: space-between; gap: 10px; padding: 4px 0; border-bottom: 1px dashed var(--color-border); }
+        .pedido-acciones { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-top: var(--space-1); }
+        .pedido-acciones .botonaccion { flex: 1 1 160px; text-align: center; }
+        .btn-dev { background: var(--color-danger); }
+        .btn-dev:hover { background: #9e2d22; }
+        .btn-dev:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-sec { background: var(--color-primary); }
+        .btn-sec:hover { background: var(--color-primary-hover); }
+    </style>
 </head>
 <body>
     <div class="contenedorinterno">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h1 class="titulointerno">mis compras</h1>
-            <a href="../index.html" class="botonaccion">volver al catálogo</a>
+            <a href="catalogo.html" class="botonaccion">volver al catálogo</a>
         </div>
 
         <div class="layoutpanel">
@@ -20,50 +38,127 @@
             </aside>
 
             <section class="contenidopanel">
-                <h2>historial reciente</h2>
-                <p style="color: #666; margin-bottom: 25px;">seguimiento de tus adquisiciones.</p>
+                <h2>historial de ventas</h2>
+                <p style="color: #666; margin-bottom: 25px;">Seguimiento de los pedidos que separaste. Recógelos en el local con tu número de venta.</p>
                 <div id="listapedidos"></div>
+
+                <!-- Calificación de FeriApp (alimenta la sección Reseñas del panel admin: feriapp_ratings). Solo compradores. -->
+                <div id="calificar" class="oculto" style="margin-top: 40px; padding-top: 20px; border-top: 2px dashed var(--color-border);">
+                    <h2>califica FeriApp</h2>
+                    <p style="color: #666;">¿Qué te parece la plataforma en general?</p>
+                    <div class="forminterno">
+                        <label for="nota-app">nota</label>
+                        <select id="nota-app">
+                            <option value="5">⭐⭐⭐⭐⭐ Excelente</option>
+                            <option value="4">⭐⭐⭐⭐ Muy buena</option>
+                            <option value="3">⭐⭐⭐ Funciona, pero puede mejorar</option>
+                            <option value="2">⭐⭐ Tiene muchos errores</option>
+                            <option value="1">⭐ Mala experiencia</option>
+                        </select>
+                        <label for="comentario-app">comentario</label>
+                        <textarea id="comentario-app" style="height: 80px;" placeholder="Déjanos un comentario o sugerencia..."></textarea>
+                        <button id="enviar-nota" class="botonaccion" style="margin-top: 15px;">enviar mi opinión</button>
+                    </div>
+                </div>
             </section>
         </div>
     </div>
 
     <script src="../js/principal.js"></script>
+    <script src="../js/datos.js"></script>
     <script>
-        const historial = FeriApp.getOrders();
+        const sesion = FeriSesion.actual();
+        const esc = FeriApp.escapeHTML;
+        const cop = n => '$' + Math.round(n).toLocaleString('es-CO');
         const contenedor = document.getElementById('listapedidos');
 
-        if (historial.length === 0) {
-            contenedor.innerHTML = "<p style='color: #666;'>aún no hay compras registradas.</p>";
-        } else {
-            historial.forEach(p => {
-                const est = p.estado || 'en camino';
-                let claseEst = est === 'en camino' ? 'pendiente' : (est === 'en devolución' ? 'devolucion' : '');
-                let btnHTML = est === 'en devolución' 
-                    ? `<button class="botonaccion" style="background:#ccc; width:100%; cursor:not-allowed;" disabled>en proceso</button>`
-                    : `<button class="botonaccion botondevolver" data-orden="${p.id}" style="background:#d90429; width:100%;">solicitar devolución</button>`;
-
-                contenedor.innerHTML += `
-                <div class="tarjetapedido">
-                    <div>
-                        <h3 style="color:#2d5a27;">Orden #${p.id}</h3>
-                        <p style="font-size:0.85rem; color:#666;">📅 ${p.fecha}</p>
-                        <p style="color:#666; margin-top:5px;">${p.items} producto(s)</p>
-                    </div>
-                    <div style="text-align:right;">
-                        <p style="font-weight:bold; margin-bottom:5px;">$${p.total.toLocaleString('es-CO')}</p>
-                        <span class="estadopedido ${claseEst}">${est}</span>
-                    </div>
-                    ${btnHTML}
-                </div>`;
-            });
+        // Ventas del cliente en sesión (feriapp_ventas.cliente guarda el id del usuario).
+        function misVentas() {
+            if (!sesion) return [];
+            const yo = sesion.id || sesion.nombre;
+            return FeriStore.leer('feriapp_ventas', []).filter(v => String(v.cliente) === String(yo)).sort((a, b) => b.id - a.id);
         }
 
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('botondevolver')) {
-                localStorage.setItem('ordendevolucion', e.target.getAttribute('data-orden'));
+        // Devolución radicada para una venta (o undefined).
+        function devolucionDe(idVenta) {
+            return FeriStore.leer('feriapp_devoluciones', []).find(d => d.venta === idVenta);
+        }
+
+        // Clase CSS de la etiqueta de estado de la venta.
+        function claseEstado(estado) {
+            return { registrada: 'pendiente', lista: '', entregada: 'entregada', cancelada: 'devolucion' }[estado] || '';
+        }
+
+        // Dibuja el historial: estado, productos, total y botones de recibo y devolución.
+        function pintar() {
+            const ventas = misVentas();
+            if (!ventas.length) {
+                contenedor.innerHTML = "<p style='color: #666;'>Aún no tienes ventas registradas. <a href='catalogo.html'>Ir al catálogo</a>.</p>";
+                return;
+            }
+            contenedor.innerHTML = ventas.map(v => {
+                const l = locales.find(x => x.id === v.local) || { codigo: '', nombre: 'Local' };
+                const dev = devolucionDe(v.id);
+                const lineas = v.detalle.map(d => {
+                    const p = productos.find(x => x.id === d.producto) || { nombre: 'Producto #' + d.producto, u: '' };
+                    return `<li><span>${esc(p.nombre)} · ${fmtCant(d.cantidad)} ${esc(p.u)}</span><span>${cop(d.subtotal)}</span></li>`;
+                }).join('');
+                const btnDev = dev ? `<button class="botonaccion btn-dev" disabled>devolución radicada</button>`
+                    : (v.estado === 'cancelada' ? `<button class="botonaccion btn-dev" disabled>venta cancelada</button>`
+                    : `<button class="botonaccion btn-dev" data-devolver="${v.id}">solicitar devolución</button>`);
+                return `<div class="pedido-card ${v.estado === 'cancelada' ? 'cancelada' : ''}">
+                    <div class="pedido-cab">
+                        <div>
+                            <h3 style="color:#2d5a27;">Venta #${v.id}</h3>
+                            <p style="font-size:0.85rem; color:#666;">📅 ${new Date(v.fecha).toLocaleString('es-CO')}</p>
+                            <p style="color:#666; margin-top:5px;">${esc(l.nombre)} · local ${esc(l.codigo)}</p>
+                        </div>
+                        <div style="text-align:right;">
+                            <p style="font-weight:bold; margin-bottom:5px;">${cop(v.total)}</p>
+                            <span class="estadopedido ${claseEstado(v.estado)}">${esc(v.estado)}</span>
+                        </div>
+                    </div>
+                    ${v.estado === 'lista' ? '<p class="msg ok" style="margin-top:var(--space-1); padding:8px 12px; border-radius:var(--radius-sm); background:#E6F2EA; color:var(--color-primary); font-weight:bold;">✅ Tu pedido está listo: pásalo a recoger al local.</p>' : ''}
+                    ${v.estado === 'entregada' ? '<p style="margin-top:var(--space-1); color:var(--color-primary); font-weight:bold;">📦 Pedido entregado.</p>' : ''}
+                    <ul class="pedido-lineas">${lineas}</ul>
+                    <div class="pedido-acciones">
+                        <button class="botonaccion btn-sec" data-recibo="${v.id}">ver / imprimir recibo</button>
+                        <button class="botonaccion btn-sec" data-pdf="${v.id}">descargar recibo (PDF)</button>
+                        ${btnDev}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // Clics: abrir el recibo, descargarlo como PDF (diálogo de impresión) o ir a devoluciones con la venta precargada.
+        contenedor.addEventListener('click', function (e) {
+            const r = e.target.closest('[data-recibo]'), p = e.target.closest('[data-pdf]'), d = e.target.closest('[data-devolver]');
+            if (r || p) {
+                const id = +(r || p).dataset[r ? 'recibo' : 'pdf'];
+                if (!FeriRecibo.abrir(id, Boolean(p))) alert('No se pudo abrir el recibo. Revisa que el navegador permita ventanas emergentes.');
+            }
+            if (d) {
+                localStorage.setItem('ordendevolucion', d.dataset.devolver);
                 window.location.href = 'devoluciones.html';
             }
         });
+
+        // Calificación de FeriApp: se guarda en feriapp_ratings { user, nota, comentario, fecha }.
+        if (sesion && sesion.rol === 'comprador') {
+            document.getElementById('calificar').classList.remove('oculto');
+            document.getElementById('enviar-nota').addEventListener('click', function () {
+                const nota = Number(document.getElementById('nota-app').value);
+                const comentario = document.getElementById('comentario-app').value.trim();
+                if (!comentario) { alert('Por favor, déjanos un comentario.'); return; }
+                const ratings = FeriStore.leer('feriapp_ratings', []);
+                ratings.push({ user: sesion.nombre, nota, comentario, fecha: new Date().toLocaleDateString('es-CO') });
+                FeriStore.guardar('feriapp_ratings', ratings);
+                document.getElementById('comentario-app').value = '';
+                alert('¡Gracias por ayudarnos a mejorar Feriapp!');
+            });
+        }
+
+        pintar();
     </script>
 </body>
 </html>

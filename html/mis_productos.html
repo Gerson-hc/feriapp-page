@@ -1,131 +1,249 @@
+<!-- FeriApp - Equipo GAES 3 - SENA ADSO - Ficha 3478080 -->
+<!-- Alineado con el documento de arquitectura V3 y los casos de uso aprobados. -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Productos - Feriapp</title>
     <link rel="stylesheet" href="../css/principal.css">
+    <style>
+        .tabla-wrap { overflow-x: auto; }
+        .acciones { display: flex; flex-wrap: wrap; gap: 6px; }
+        .acciones button { border: 0; border-radius: var(--radius-sm); padding: 6px 10px; cursor: pointer; font-weight: bold; color: #fff; background: var(--color-primary); }
+        .acciones .editar { background: var(--color-rating); }
+        .acciones .peligro { background: var(--color-danger); }
+        .badge-ok { color: var(--color-primary); font-weight: bold; }
+        .badge-no { color: var(--color-danger); font-weight: bold; }
+        .bajo { color: var(--color-danger); font-size: .78rem; font-weight: bold; }
+        .vacio { color: var(--color-text-muted); }
+        .campo-err { color: var(--color-danger); font-size: .85rem; margin-bottom: var(--space-1); min-height: 1em; }
+        .cajamodal.ancha { max-width: 600px; max-height: 90vh; overflow-y: auto; }
+    </style>
 </head>
 <body>
     <div class="contenedorinterno">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-1);">
             <h1 class="titulointerno">gestión de inventario</h1>
-            <a href="../index.html" class="botonaccion">volver al catálogo</a>
+            <div style="display: flex; gap: var(--space-1);">
+                <a href="mis_ventas.html" class="botonaccion">mis ventas</a>
+                <a href="catalogo.html" class="botonaccion">volver al catálogo</a>
+            </div>
         </div>
 
         <div class="layoutpanel">
-            <section class="contenidopanel" style="flex: 1;">
+            <section class="contenidopanel" style="flex: 1; min-width: 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
                     <div>
-                        <h2>tus productos publicados</h2>
-                        <p style="color: #666; font-size: 0.9rem;">Administra precios y lee las opiniones de tus clientes.</p>
+                        <h2 id="titulo-productor">tus productos</h2>
+                        <p style="color: #666; font-size: 0.9rem;">Ajusta precios y existencias, o da de baja un producto. Lee las opiniones de tus clientes.</p>
                     </div>
-                    <!-- Barra de búsqueda del vendedor -->
                     <input type="text" id="vendedor-buscar" placeholder="🔍 Buscar mi producto..." style="padding: 10px; border-radius: 20px; border: 1px solid #ccc; outline: none; width: 250px;">
                 </div>
-                
-                <table class="tabladatos" id="tablavendedor">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Categoría</th>
-                            <th>Precio</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+
+                <div class="tabla-wrap">
+                    <table class="tabladatos" id="tablavendedor">
+                        <thead>
+                            <tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Existencias</th><th>Stock mínimo</th><th>Estado</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </section>
         </div>
     </div>
 
-    <!-- MODAL: VER OPINIONES Y DETALLES -->
+    <!-- MODAL: ver producto con calificaciones -->
     <div id="modal-ver" class="fondomodal">
-        <div class="cajamodal" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
-            <span class="cerrarmodal" onclick="document.getElementById('modal-ver').style.display='none'">&times;</span>
+        <div class="cajamodal ancha">
+            <span class="cerrarmodal" data-cerrar="modal-ver">&times;</span>
             <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px;">
-                <div id="ver-imagen" style="font-size: 4rem;">📦</div>
+                <div id="ver-icono" style="font-size: 4rem;">📦</div>
                 <div>
-                    <h2 id="ver-nombre" style="color: #2d5a27; margin: 0;">Nombre</h2>
-                    <p id="ver-precio" style="color: #d90429; font-weight: bold; font-size: 1.5rem; margin: 5px 0;"></p>
+                    <h2 id="ver-nombre" style="color: var(--color-primary); margin: 0;"></h2>
+                    <p id="ver-precio" style="color: var(--color-accent); font-weight: bold; font-size: 1.5rem; margin: 5px 0;"></p>
                     <p id="ver-desc" style="color: #666; font-size: 0.9rem;"></p>
                 </div>
             </div>
-            
-            <!-- Reseñas tipo Play Store -->
             <div class="caja-opiniones">
                 <h3 style="color: #333; margin-bottom: 15px;">Calificaciones y opiniones</h3>
-                <div class="resumen-calificacion">
-                    <div>
-                        <div class="nota-promedio">4.8</div>
-                        <div class="estrellas-promedio">⭐⭐⭐⭐⭐</div>
-                        <p style="font-size: 0.8rem; color: #666; text-align: center;">24 reseñas</p>
-                    </div>
-                    <div class="barras-calificacion">
-                        <div class="fila-barra"><span>5</span><div class="barra-fondo"><div class="barra-llena" style="width: 85%;"></div></div></div>
-                        <div class="fila-barra"><span>4</span><div class="barra-fondo"><div class="barra-llena" style="width: 10%;"></div></div></div>
-                        <div class="fila-barra"><span>3</span><div class="barra-fondo"><div class="barra-llena" style="width: 5%;"></div></div></div>
-                        <div class="fila-barra"><span>2</span><div class="barra-fondo"><div class="barra-llena" style="width: 0%;"></div></div></div>
-                        <div class="fila-barra"><span>1</span><div class="barra-fondo"><div class="barra-llena" style="width: 0%;"></div></div></div>
-                    </div>
-                </div>
-                <div id="lista-comentarios">
-                    <div class="comentario-item">
-                        <h4>Cliente Satisfecho <span>⭐⭐⭐⭐⭐</span></h4>
-                        <p>Excelente calidad, el producto llegó súper fresco. Recomendado.</p>
-                    </div>
-                    <div class="comentario-item">
-                        <h4>Usuario Frecuente <span>⭐⭐⭐⭐</span></h4>
-                        <p>Muy bueno, aunque el empaque podría mejorar un poco.</p>
-                    </div>
-                </div>
+                <div id="ver-opiniones"></div>
             </div>
         </div>
     </div>
 
+    <!-- MODAL: editar precio y existencias -->
+    <div id="modal-editar" class="fondomodal">
+        <div class="cajamodal">
+            <span class="cerrarmodal" data-cerrar="modal-editar">&times;</span>
+            <h2 id="ed-titulo" style="color: var(--color-primary); margin-bottom: var(--space-2);"></h2>
+            <label for="ed-precio"><strong>precio (COP)</strong></label>
+            <input type="number" id="ed-precio" min="1" step="1" style="margin-top: 5px;">
+            <label for="ed-cant"><strong id="ed-cant-label">existencias</strong></label>
+            <input type="number" id="ed-cant" min="0" style="margin-top: 5px;">
+            <p id="ed-error" class="campo-err" role="alert"></p>
+            <button id="ed-guardar" class="botonaccion" style="width: 100%;">guardar cambios</button>
+        </div>
+    </div>
+
     <script src="../js/principal.js"></script>
+    <script src="../js/datos.js"></script>
     <script>
-        function cargarMisProductos(filtro = '') {
-            const inventario = FeriApp.safeParse(localStorage.getItem('catalogo_v3'), []);
-            const tabla = document.querySelector('#tablavendedor tbody');
-            tabla.innerHTML = '';
+        const esc = FeriApp.escapeHTML;
+        const cop = n => '$' + Math.round(n).toLocaleString('es-CO');
+        const sesion = FeriSesion.actual();
+        let productoEnEdicion = null;
 
-            let misProductos = inventario.filter(p => p.nombre.toLowerCase().includes(filtro.toLowerCase()));
-
-            if(misProductos.length === 0) {
-                tabla.innerHTML = `<tr><td colspan='4' style='text-align:center;'>No se encontraron productos.</td></tr>`;
-                return;
-            }
-
-            misProductos.forEach(p => {
-                let imgHtml = p.imagen ? `<img src="${p.imagen}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; vertical-align:middle;">` : p.icono;
-                tabla.innerHTML += `
-                    <tr>
-                        <td style="font-weight:bold; color:#2d5a27;">${imgHtml} ${p.nombre}</td>
-                        <td>${p.categoria}</td>
-                        <td>$${p.precio.toLocaleString('es-CO')}</td>
-                        <td style="display: flex; gap: 10px;">
-                            <button class="botonaccion" style="padding: 5px 10px;" onclick="verProducto('${p.id}')">👁️ Ver</button>
-                           <button class="btn-editar" onclick="cambiarPrecio('${p.id}')">✏️ Precio</button>
-                            <button class="btn-eliminar" onclick="eliminarProducto('${p.id}')">🗑️</button>
-                        </td>
-                    </tr>
-                `;
-            });
+        // Usuario vendedor en sesión (feriapp_usuarios_bd), buscado por id y, si falta, por correo.
+        function vendedorActual() {
+            if (!sesion) return null;
+            return (sesion.id && FeriUsuarios.buscarPorId(sesion.id)) || FeriUsuarios.buscarPorCorreo(sesion.correo);
         }
 
-        document.getElementById('vendedor-buscar').addEventListener('input', (e) => cargarMisProductos(e.target.value));
+        // Productos de la lista `productos` (datos.js) que pertenecen a los locales del productor del vendedor logueado.
+        function misProductos() {
+            const u = vendedorActual();
+            if (!u || !u.productor) return [];
+            const misLocales = locales.filter(l => l.productor === u.productor).map(l => l.id);
+            return productos.filter(p => misLocales.includes(p.local));
+        }
 
-        window.verProducto = function(id) {
-            const inventario = FeriApp.safeParse(localStorage.getItem('catalogo_v3'), []);
-            const p = inventario.find(x => x.id === id);
-            if (p) {
-                document.getElementById('ver-imagen').innerHTML = p.imagen ? `<img src="${p.imagen}" style="width:100px; height:100px; border-radius:10px; object-fit:cover;">` : p.icono;
-                document.getElementById('ver-nombre').textContent = p.nombre;
-                document.getElementById('ver-precio').textContent = "$" + p.precio.toLocaleString('es-CO');
-                document.getElementById('ver-desc').textContent = p.desc;
-                document.getElementById('modal-ver').style.display = 'flex';
+        // Abre o cierra un modal por id.
+        const abrirModal = id => { document.getElementById(id).style.display = 'flex'; };
+        const cerrarModal = id => { document.getElementById(id).style.display = 'none'; };
+
+        // Estado del producto (activo o inactivo) como texto.
+        function estadoTexto(p) {
+            return (p.baneado || !p.activo) ? '<span class="badge-no">inactivo</span>' : '<span class="badge-ok">activo</span>';
+        }
+
+        // Dibuja la tabla con nombre, categoría, precio, existencias y stock mínimo de mis productos.
+        function cargarMisProductos(filtro = '') {
+            const tabla = document.querySelector('#tablavendedor tbody');
+            const u = vendedorActual();
+            if (u && u.productor) document.getElementById('titulo-productor').textContent = 'productos de ' + (productores[u.productor] || '');
+            const f = filtro.trim().toLowerCase();
+            const lista = misProductos().filter(p => !f || p.nombre.toLowerCase().includes(f));
+
+            if (!u || !u.productor) {
+                tabla.innerHTML = `<tr><td colspan="7" style="text-align:center;" class="vacio">Tu cuenta aún no tiene un vendedor asignado. Pídele al administrador que lo configure.</td></tr>`;
+                return;
             }
-        };
+            if (!lista.length) {
+                tabla.innerHTML = `<tr><td colspan="7" style="text-align:center;" class="vacio">No se encontraron productos.</td></tr>`;
+                return;
+            }
+            tabla.innerHTML = lista.map(p => {
+                const est = Inventario.estado(p);
+                const btnBaja = p.activo
+                    ? `<button class="peligro" data-baja="${p.id}">dar de baja</button>`
+                    : (p.baneado ? '<span class="bajo">Este producto fue desactivado por el administrador.</span>' : `<button data-alta="${p.id}">reactivar</button>`);
+                return `<tr>
+                    <td style="font-weight:bold; color:var(--color-primary);">${iconosCategoria[p.cat]} ${esc(p.nombre)}</td>
+                    <td>${esc(categorias[p.cat])}</td>
+                    <td>${cop(p.precio)} / ${esc(p.u)}</td>
+                    <td>${fmtCant(p.cant)} ${esc(p.u)}${est === 'agotado' ? ' <span class="bajo">agotado</span>' : (est === 'bajo' ? ' <span class="bajo">bajo</span>' : '')}</td>
+                    <td>${fmtCant(p.min)} ${esc(p.u)}</td>
+                    <td>${estadoTexto(p)}</td>
+                    <td><div class="acciones">
+                        <button data-ver="${p.id}">👁️ ver</button>
+                        <button class="editar" data-editar="${p.id}">✏️ editar</button>
+                        ${btnBaja}
+                    </div></td>
+                </tr>`;
+            }).join('');
+        }
+
+        // Modal "ver producto": datos, calificación promedio y comentarios (feriapp_calificaciones_producto si existe).
+        function verProducto(id) {
+            const p = misProductos().find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('ver-icono').textContent = iconosCategoria[p.cat];
+            document.getElementById('ver-nombre').textContent = p.nombre;
+            document.getElementById('ver-precio').textContent = cop(p.precio) + ' por ' + p.u;
+            document.getElementById('ver-desc').textContent = `${categorias[p.cat]} · quedan ${fmtCant(p.cant)} ${p.u}`;
+
+            // Calificaciones guardadas por los clientes: [{ producto, usuario, puntaje, comentario, fecha }]
+            const guardadas = FeriStore.leer('feriapp_calificaciones_producto', []).filter(c => c.producto === p.id);
+            const puntajes = p.calif.concat(guardadas.map(c => Number(c.puntaje) || 0));
+            const cont = document.getElementById('ver-opiniones');
+            if (!puntajes.length) {
+                cont.innerHTML = '<p class="vacio">Sin calificaciones.</p>';
+            } else {
+                const promedio = puntajes.reduce((s, v) => s + v, 0) / puntajes.length;
+                const barras = [5, 4, 3, 2, 1].map(n => {
+                    const pct = Math.round(puntajes.filter(v => v === n).length / puntajes.length * 100);
+                    return `<div class="fila-barra"><span>${n}</span><div class="barra-fondo"><div class="barra-llena" style="width:${pct}%;"></div></div></div>`;
+                }).join('');
+                cont.innerHTML = `<div class="resumen-calificacion">
+                        <div><div class="nota-promedio">${promedio.toFixed(1)}</div>
+                            <div class="estrellas-promedio">${'⭐'.repeat(Math.round(promedio))}</div>
+                            <p style="font-size: 0.8rem; color: #666; text-align: center;">${puntajes.length} calificación(es)</p></div>
+                        <div class="barras-calificacion">${barras}</div>
+                    </div>
+                    <div id="lista-comentarios">${guardadas.filter(c => c.comentario).map(c => `<div class="comentario-item">
+                        <h4>${esc(c.usuario || 'Cliente')} <span>${'⭐'.repeat(Number(c.puntaje) || 0)}</span></h4><p>${esc(c.comentario)}</p></div>`).join('')}</div>`;
+            }
+            abrirModal('modal-ver');
+        }
+
+        // Abre el modal de edición; el campo de existencias usa Inventario.paso(unidad) como salto.
+        function abrirEditar(id) {
+            const p = misProductos().find(x => x.id === id);
+            if (!p) return;
+            productoEnEdicion = p;
+            const paso = Inventario.paso(p.u);
+            document.getElementById('ed-titulo').textContent = 'Editar ' + p.nombre;
+            document.getElementById('ed-precio').value = p.precio;
+            const cant = document.getElementById('ed-cant');
+            cant.step = paso; cant.value = p.cant;
+            document.getElementById('ed-cant-label').textContent = `existencias (${p.u}, en múltiplos de ${fmtCant(paso)})`;
+            document.getElementById('ed-error').textContent = '';
+            abrirModal('modal-editar');
+        }
+
+        // Valida y guarda precio y existencias. Las existencias se persisten con Inventario._guardar().
+        function guardarEdicion() {
+            const p = productoEnEdicion, err = document.getElementById('ed-error');
+            const precio = Number(document.getElementById('ed-precio').value);
+            const cant = parseFloat(document.getElementById('ed-cant').value);
+            const paso = Inventario.paso(p.u), n = cant / paso;
+            if (!(precio > 0) || !Number.isInteger(precio)) { err.textContent = 'El precio debe ser un número entero mayor que cero.'; return; }
+            if (isNaN(cant) || cant < 0) { err.textContent = 'Las existencias no pueden ser negativas.'; return; }
+            if (Math.abs(n - Math.round(n)) > 1e-9) {
+                err.textContent = paso === 1 ? `${p.nombre} se maneja por ${p.u} completo (cantidades enteras).` : `${p.nombre} se maneja en múltiplos de 0,5 ${p.u}.`;
+                return;
+            }
+            p.precio = precio;
+            p.cant = Math.round(cant * 100) / 100;
+            p.fecha = new Date().toISOString(); // regla 7: todo ajuste del productor actualiza la fecha
+            if (!Inventario._guardar()) { err.textContent = 'No se pudo guardar en este navegador.'; return; }
+            cerrarModal('modal-editar');
+            cargarMisProductos(document.getElementById('vendedor-buscar').value);
+        }
+
+        // Dar de baja (activo = 0) o reactivar un producto propio.
+        function cambiarActivo(id, activo) {
+            const p = misProductos().find(x => x.id === id);
+            if (!p || (activo && p.baneado)) return;
+            if (!activo && !confirm(`¿Dar de baja "${p.nombre}"? Dejará de aparecer en el catálogo.`)) return;
+            p.activo = activo; p.fecha = new Date().toISOString();
+            Inventario._guardar();
+            cargarMisProductos(document.getElementById('vendedor-buscar').value);
+        }
+
+        // ---------- EVENTOS ----------
+        document.getElementById('vendedor-buscar').addEventListener('input', e => cargarMisProductos(e.target.value));
+        document.getElementById('tablavendedor').addEventListener('click', e => {
+            const b = e.target.closest('button'); if (!b) return;
+            if (b.dataset.ver) verProducto(+b.dataset.ver);
+            if (b.dataset.editar) abrirEditar(+b.dataset.editar);
+            if (b.dataset.baja) cambiarActivo(+b.dataset.baja, 0);
+            if (b.dataset.alta) cambiarActivo(+b.dataset.alta, 1);
+        });
+        document.getElementById('ed-guardar').addEventListener('click', guardarEdicion);
+        document.querySelectorAll('[data-cerrar]').forEach(x => x.addEventListener('click', () => cerrarModal(x.dataset.cerrar)));
+        document.querySelectorAll('.fondomodal').forEach(f => f.addEventListener('click', e => { if (e.target === f) f.style.display = 'none'; }));
 
         cargarMisProductos();
     </script>

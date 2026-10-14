@@ -1,3 +1,5 @@
+<!-- FeriApp - Equipo GAES 3 - SENA ADSO - Ficha 3478080 -->
+<!-- Alineado con el documento de arquitectura V3 y los casos de uso aprobados. -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -36,6 +38,10 @@
         .msg { padding: 10px 12px; border-radius: var(--radius-sm); font-size: .88rem; margin-bottom: var(--space-1); background: var(--color-danger-soft); color: var(--color-danger); }
         .msg.ok { background: #E6F2EA; color: var(--color-primary); }
         .vacio { color: var(--color-text-muted); }
+        .desc-caja { display: flex; gap: 8px; margin: var(--space-1) 0; }
+        .desc-caja input { flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); text-transform: uppercase; }
+        .metodo { display: flex; flex-direction: column; gap: 6px; margin: var(--space-1) 0; font-size: .92rem; }
+        .metodo label { cursor: pointer; }
         .enlace-sec { background: none; border: 0; color: var(--color-text-muted); text-decoration: underline; cursor: pointer; margin-top: var(--space-1); }
     </style>
 </head>
@@ -48,8 +54,16 @@
             <a href="catalogo.html" class="enlacenav">catálogo</a>
             <a href="mapa.html" class="enlacenav">mapa</a>
             <a href="contacto.html" class="enlacenav">contacto</a>
-            <a href="login.html" id="enlacesesion" class="enlacenav">iniciar sesión</a>
         </nav>
+        <div class="contenedornaviconos">
+            <a href="catalogo.html#pedido" class="botonperfil" aria-label="Ver mi pedido">
+                🛒<span id="contadorcarrito" class="contadorcarrito" style="display: none;">0</span>
+            </a>
+            <div class="contenedorperfil">
+                <button id="botonperfil" class="botonperfil" aria-label="Menú de perfil">👤</button>
+                <div id="menuperfil" class="menuperfil"></div>
+            </div>
+        </div>
     </header>
 
     <div class="contenedorinterno">
@@ -69,31 +83,43 @@
         </div>
     </div>
 
+    <script src="../js/principal.js"></script>
     <script src="../js/datos.js"></script>
     <script>
     const $ = id => document.getElementById(id);
+    // Formatea un valor como pesos colombianos.
     const cop = n => '$' + Math.round(n).toLocaleString('es-CO');
+    // Promedio de una lista de puntajes (null si está vacía).
     const prom = a => a.length ? a.reduce((s, v) => s + v, 0) / a.length : null;
     const porId = id => productos.find(p => p.id === id);
     const localDe = id => locales.find(l => l.id === id);
     const plazaDe = id => plazas.find(p => p.id === id);
+    // Redondea a 2 decimales para evitar errores de coma flotante (1.5 + 0.5, etc.).
     const redondear = n => Math.round(n * 100) / 100;
+    // Escapa texto antes de insertarlo en HTML.
+    const esc = v => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
     let pedido = FeriStore.leer('feriapp_pedido_borrador', null) || { local: null, items: [] }; // items: {id, cant}
     let aviso = null, confirmada = null;
-    const guardarBorrador = () => FeriStore.guardar('feriapp_pedido_borrador', pedido);
+    let metodoPago = 'presencial';   // CU-21: 'presencial' | 'virtual'
+    let descAplicado = null, msgDesc = null; // CU-22: { codigo, porcentaje } y mensaje del código
+    // Guarda el borrador del pedido en feriapp_pedido_borrador y actualiza la burbuja del carrito.
+    const guardarBorrador = () => { FeriStore.guardar('feriapp_pedido_borrador', pedido); if (window.actualizarContadorCarrito) actualizarContadorCarrito(); };
 
     // ---- Filtros (CU-03): solo productos activos de locales con productor ----
+    // Llena los selectores de categoría, plaza y local.
     function llenarFiltros() {
         $('fcat').innerHTML = '<option value="">todas las categorías</option>' + Object.entries(categorias).map(([i, n]) => `<option value="${i}">${n}</option>`).join('');
         $('fplaza').innerHTML = '<option value="">todas las plazas</option>' + plazas.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
         llenarLocales();
     }
+    // Llena el selector de locales (solo con productor), limitado a la plaza elegida.
     function llenarLocales() {
         const pz = +$('fplaza').value;
         const ls = locales.filter(l => l.productor && (!pz || l.plaza === pz));
         $('flocal').innerHTML = '<option value="">todos los locales</option>' + ls.map(l => `<option value="${l.id}">${l.codigo} · ${l.nombre}</option>`).join('');
     }
+    // Devuelve los productos activos que cumplen búsqueda, categoría, plaza y local.
     function filtrados() {
         const q = $('fbusca').value.trim().toLowerCase(), c = +$('fcat').value, pz = +$('fplaza').value, lo = +$('flocal').value;
         return productos.filter(p => {
@@ -102,19 +128,34 @@
                 && (!q || p.nombre.toLowerCase().includes(q));
         });
     }
+    // Aplica los filtros que llegan por la URL: ?cat=id (o nombre), ?q=texto, ?local=id (desde el mapa).
+    function aplicarFiltrosDeUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const q = params.get('q'), cat = params.get('cat'), loc = +params.get('local');
+        if (q) $('fbusca').value = q;
+        if (cat) {
+            const norm = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            const id = categorias[cat] ? cat : Object.keys(categorias).find(i => norm(categorias[i]).startsWith(norm(cat)));
+            if (id) $('fcat').value = id;
+        }
+        const l = loc ? localDe(loc) : null;
+        if (l && l.productor) { $('fplaza').value = l.plaza; llenarLocales(); $('flocal').value = l.id; }
+    }
 
+    // Dibuja las tarjetas de producto. El botón "añadir" es siempre el mismo; solo cambia su texto si está bloqueado.
     function pintarGrilla() {
         const lista = filtrados();
         if (!lista.length) { $('grilla').innerHTML = '<p class="vacio">No hay productos que coincidan con la búsqueda.</p>'; return; }
         $('grilla').innerHTML = lista.map(p => {
             const l = localDe(p.local), pz = plazaDe(l.plaza), pp = prom(p.calif), est = Inventario.estado(p);
-            const bloqueado = est === 'agotado' || l.estado === 'cerrado', paso = Inventario.paso(p.u);
+            const cerrado = l.estado === 'cerrado', bloqueado = est === 'agotado' || cerrado, paso = Inventario.paso(p.u);
             const stockTxt = est === 'agotado' ? '<span class="bajo">agotado</span>'
                 : `quedan ${fmtCant(p.cant)} ${p.u}${est === 'bajo' ? ' <span class="bajo">· pocas existencias</span>' : ''}`;
+            const etiqueta = est === 'agotado' ? 'agotado' : (cerrado ? 'local cerrado' : 'añadir');
             return `<article class="prod">
                 <span class="ico" aria-hidden="true">${iconosCategoria[p.cat]}</span>
                 <h3>${p.nombre}</h3>
-                <p class="meta">${l.nombre} · local ${l.codigo}<br>${pz.nombre}${l.estado === 'cerrado' ? ' · <strong>local cerrado</strong>' : ''}</p>
+                <p class="meta">${l.nombre} · local ${l.codigo}<br>${pz.nombre}${cerrado ? ' · <strong>local cerrado</strong>' : ''}</p>
                 <p><span class="precio">${cop(p.precio)}</span> <span class="meta">por ${p.u}</span></p>
                 <p class="meta">${pp ? `<span class="estrellas">★</span> ${pp.toFixed(1)} · ` : 'sin calificaciones · '}${stockTxt}</p>
                 <div class="cant">
@@ -123,13 +164,14 @@
                         <input type="number" id="q${p.id}" value="${Math.min(1, p.cant)}" min="${paso}" max="${p.cant}" step="${paso}" inputmode="decimal" aria-label="Cantidad (${p.u})" ${bloqueado ? 'disabled' : ''}>
                         <button type="button" data-q="${p.id},1" aria-label="Más" ${bloqueado ? 'disabled' : ''}>+</button>
                     </div>
-                    <button class="botonaccion" data-add="${p.id}" ${bloqueado ? 'disabled' : ''}>${est === 'agotado' ? 'agotado' : 'agregar'}</button>
+                    <button class="botonaccion" data-add="${p.id}" ${bloqueado ? 'disabled' : ''}>${etiqueta}</button>
                 </div>
             </article>`;
         }).join('');
     }
 
-    // El cliente elige la cantidad con − / + o escribiéndola; se limita a múltiplos válidos y a las existencias
+    // El cliente elige la cantidad con − / + o escribiéndola; el salto lo da Inventario.paso(unidad)
+    // y se limita a las existencias.
     function ajustarInput(id, delta) {
         const p = porId(id), inp = $('q' + id), paso = Inventario.paso(p.u);
         const v = redondear((parseFloat(inp.value) || 0) + delta * paso);
@@ -137,6 +179,7 @@
     }
 
     // ---- Pedido (CU-05): productos de un mismo local ----
+    // Añade al pedido la cantidad escrita en la tarjeta, validando con Inventario.validar().
     function agregar(id) {
         aviso = null; confirmada = null;
         const p = porId(id), cant = parseFloat($('q' + id).value);
@@ -150,7 +193,8 @@
         if (ya) ya.cant = redondear(ya.cant + cant); else pedido.items.push({ id, cant });
         guardarBorrador(); pintarPedido();
     }
-    function cambiar(id, delta) { // − / + dentro del pedido
+    // Sube o baja la cantidad de una línea del pedido en un paso (Inventario.paso) y la valida.
+    function cambiar(id, delta) {
         const p = porId(id), i = pedido.items.find(x => x.id === id), nueva = redondear(i.cant + delta * Inventario.paso(p.u));
         aviso = null;
         if (nueva <= 0) return quitar(id);
@@ -158,33 +202,57 @@
         if (!r.ok) { aviso = r.msg; return pintarPedido(); }
         i.cant = nueva; guardarBorrador(); pintarPedido();
     }
+    // Quita una línea del pedido; si queda vacío, libera el local.
     function quitar(id) {
         pedido.items = pedido.items.filter(i => i.id !== id);
         if (!pedido.items.length) pedido.local = null;
         aviso = null; guardarBorrador(); pintarPedido();
     }
-    function vaciar() { // flujo alterno 4a: el cliente cancela, no se registra nada
-        pedido = { local: null, items: [] }; aviso = null; guardarBorrador(); pintarPedido();
+    // Vacía el pedido (flujo alterno 4a: el cliente cancela, no se registra nada).
+    function vaciar() {
+        pedido = { local: null, items: [] }; aviso = null; descAplicado = null; msgDesc = null; metodoPago = 'presencial'; guardarBorrador(); pintarPedido();
     }
+    // Suma del pedido en borrador (subtotal, antes del descuento).
     const totalPedido = () => pedido.items.reduce((s, i) => s + porId(i.id).precio * i.cant, 0);
+    // Valor del descuento aplicado sobre el subtotal (0 si no hay código).
+    const montoDescuento = () => descAplicado ? Math.round(totalPedido() * descAplicado.porcentaje / 100) : 0;
+    // Aplica el código escrito: lo valida contra la lista `descuentos` de datos.js.
+    function aplicarDescuento() {
+        const d = buscarDescuento($('codigo-desc').value);
+        if (d) { descAplicado = d; msgDesc = { ok: true, t: `Código ${d.codigo} aplicado (${d.porcentaje}%).` }; }
+        else { descAplicado = null; msgDesc = { ok: false, t: 'Código inválido o vencido' }; }
+        pintarPedido();
+    }
 
+    // Confirma el pedido: valida sesión y rol, descuenta inventario (todo o nada), guarda la venta
+    // en feriapp_ventas y genera el recibo (CU-23) en feriapp_recibos.
     function confirmar() {
         aviso = null;
         const s = FeriSesion.actual();
         if (!s) { aviso = 'Inicia sesión para separar tu pedido. Tus productos se conservan.'; return pintarPedido(true); }
         if (s.rol !== 'comprador') { aviso = 'Solo los clientes pueden separar pedidos.'; return pintarPedido(); }
         const ventas = FeriStore.leer('feriapp_ventas', []);
-        const id = 4 + ventas.length + 1; // el script SQL de ejemplo ya trae 4 ventas
-        const venta = { id, cliente: s.id || s.nombre, local: pedido.local, fecha: new Date().toISOString(), total: totalPedido(), estado: 'registrada',
+        const id = Math.max(4, ...ventas.map(v => v.id)) + 1; // el script SQL de ejemplo ya trae 4 ventas
+        const venta = { id, cliente: s.id || s.nombre, cliente_nombre: s.nombre, local: pedido.local, fecha: new Date().toISOString(),
+            total: redondear(totalPedido() - montoDescuento()), descuento: montoDescuento(), estado: 'registrada', metodo_pago: metodoPago,
             detalle: pedido.items.map(i => { const p = porId(i.id); return { producto: p.id, cantidad: i.cant, precio_unitario: p.precio, subtotal: redondear(p.precio * i.cant) }; }) };
-        const r = Inventario.descontar(pedido.items); // valida todo y descuenta todo o nada (regla 4)
+        const lineas = pedido.items.map(i => ({ id: i.id, cant: i.cant }));
+        const r = Inventario.descontar(lineas); // valida todo y descuenta todo o nada (regla 4)
         if (!r.ok) { aviso = r.msg; return pintarPedido(); }
         ventas.push(venta);
-        if (!FeriStore.guardar('feriapp_ventas', ventas)) { aviso = 'No se pudo registrar el pedido. Inténtalo de nuevo.'; return pintarPedido(); }
-        confirmada = { id, local: localDe(pedido.local), total: venta.total };
+        if (!FeriStore.guardar('feriapp_ventas', ventas)) {
+            // Si no se pudo registrar la venta, se devuelven las existencias descontadas.
+            lineas.forEach(l => { const p = porId(l.id); p.cant = redondear(p.cant + l.cant); });
+            Inventario._guardar();
+            aviso = 'No se pudo registrar el pedido. Inténtalo de nuevo.'; return pintarPedido();
+        }
+        FeriRecibo.generar(venta); // CU-23: el recibo queda guardado en feriapp_recibos
+        confirmada = { id, local: localDe(pedido.local), total: venta.total, metodo: metodoPago };
+        if (metodoPago === 'virtual') alert('Pago procesado'); // simulación: no hay pasarela real
         vaciar(); pintarGrilla();
     }
 
+    // Dibuja el panel lateral: pedido en borrador, mensajes de aviso o la confirmación con el recibo.
     function pintarPedido(mostrarLogin) {
         const cont = $('pedido');
         if (confirmada) {
@@ -192,13 +260,15 @@
             cont.innerHTML = `<h2 style="color: var(--color-primary);">pedido separado</h2>
                 <p class="msg ok" style="margin-top: var(--space-1);">Número de venta: <strong>#${confirmada.id}</strong></p>
                 <p>Total: <strong>${cop(confirmada.total)}</strong></p>
-                <p class="vacio" style="margin-top: var(--space-1);">Recógelo en el local ${l.codigo} (${l.nombre}) cuando el productor lo marque como <em>lista</em>. Presenta el número de venta. El pago se hace directamente con el productor; FeriApp no ofrece financiación.</p>
+                <p class="vacio" style="margin-top: var(--space-1);">Recógelo en el local ${l.codigo} (${l.nombre}) cuando el vendedor lo marque como <em>lista</em>. Presenta el número de venta. ${confirmada.metodo === 'virtual' ? 'El pago virtual ya fue procesado.' : 'El pago se hace directamente con el vendedor en el local.'} FeriApp no ofrece financiación.</p>
+                <button class="botonaccion" id="recibo" style="width: 100%; margin-top: var(--space-1);">ver / imprimir recibo</button>
                 <button class="enlace-sec" id="nuevo">hacer otro pedido</button>`;
+            $('recibo').onclick = () => { if (!FeriRecibo.abrir(confirmada.id)) alert('Tu navegador bloqueó la ventana del recibo. Permite las ventanas emergentes o míralo en "mis compras".'); };
             $('nuevo').onclick = () => { confirmada = null; pintarPedido(); };
             return;
         }
         let h = '<h2 style="color: var(--color-primary);">tu pedido</h2>';
-        if (aviso) h += `<p class="msg" role="alert" style="margin-top: var(--space-1);">${aviso}${mostrarLogin ? ' <a href="login.html"><strong>Iniciar sesión</strong></a>' : ''}</p>`;
+        if (aviso) h += `<p class="msg" role="alert" style="margin-top: var(--space-1);">${aviso}${mostrarLogin ? ' <a href="login.html?return=catalogo.html"><strong>Iniciar sesión</strong></a>' : ''}</p>`;
         if (!pedido.items.length) {
             h += '<p class="vacio">Agrega productos de un mismo local para separarlos.</p>';
         } else {
@@ -212,7 +282,15 @@
                             <button type="button" data-pq="${i.id},1" aria-label="Más" ${i.cant + Inventario.paso(p.u) > p.cant + 1e-9 ? 'disabled' : ''}>+</button>
                         </span>
                         <span style="text-align:right; min-width: 70px;"><strong>${cop(p.precio * i.cant)}</strong><br><button class="quitar" data-del="${i.id}" aria-label="Quitar ${p.nombre}">quitar</button></span></li>`;
-            }).join('') + `</ul><div class="total"><span>total</span><strong>${cop(totalPedido())}</strong></div>
+            }).join('') + `</ul>
+                <div class="desc-caja"><input type="text" id="codigo-desc" placeholder="Código de descuento" aria-label="Código de descuento" value="${descAplicado ? descAplicado.codigo : ''}"><button class="botonaccion" id="aplicar" type="button">aplicar</button></div>
+                ${msgDesc ? `<p class="msg ${msgDesc.ok ? 'ok' : ''}" role="status">${msgDesc.t}</p>` : ''}
+                ${descAplicado ? `<p class="vacio">Subtotal: ${cop(totalPedido())}</p><p style="color: var(--color-primary); font-weight: bold;">Descuento aplicado: -${cop(montoDescuento())}</p>` : ''}
+                <div class="total"><span>total</span><strong>${cop(totalPedido() - montoDescuento())}</strong></div>
+                <div class="metodo" role="radiogroup" aria-label="Método de pago">
+                    <label><input type="radio" name="metodo" value="presencial" ${metodoPago === 'presencial' ? 'checked' : ''}> 💵 Pago presencial en el local</label>
+                    <label><input type="radio" name="metodo" value="virtual" ${metodoPago === 'virtual' ? 'checked' : ''}> 💳 Pago virtual (PSE / tarjeta)</label>
+                </div>
                 <button class="botonaccion" id="confirmar" style="width: 100%;">separar pedido</button>
                 <button class="enlace-sec" id="vaciar">vaciar pedido</button>`;
         }
@@ -227,17 +305,18 @@
     $('pedido').addEventListener('click', e => {
         const q = e.target.closest('[data-pq]'); if (q) { const [id, d] = q.dataset.pq.split(',').map(Number); return cambiar(id, d); }
         const d = e.target.closest('[data-del]'); if (d) return quitar(+d.dataset.del);
+        if (e.target.id === 'aplicar') aplicarDescuento();
         if (e.target.id === 'confirmar') confirmar();
         if (e.target.id === 'vaciar') vaciar();
     });
+    $('pedido').addEventListener('change', e => { if (e.target.name === 'metodo') metodoPago = e.target.value; });
     ['fbusca', 'fcat', 'flocal'].forEach(id => $(id).addEventListener('input', pintarGrilla));
     $('fplaza').addEventListener('change', () => { llenarLocales(); pintarGrilla(); });
 
-    // Si el borrador guardado ya no cabe en las existencias, se descarta lo que sobra
+    // Arranque: si el borrador guardado ya no cabe en las existencias, se descarta lo que sobra.
     pedido.items = pedido.items.filter(i => porId(i.id) && Inventario.validar(porId(i.id), i.cant).ok);
     if (!pedido.items.length) pedido.local = null;
-    FeriSesion.pintarEnlace();
-    llenarFiltros(); pintarGrilla(); pintarPedido();
+    llenarFiltros(); aplicarFiltrosDeUrl(); pintarGrilla(); pintarPedido();
     </script>
 </body>
 </html>

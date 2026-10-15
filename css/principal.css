@@ -12,6 +12,8 @@
     --color-danger: #C0392B;          /* errores, eliminar, cerrar sesión, devoluciones */
     --color-danger-soft: #FBEAE8;     /* fondo de cajas de error */
     --color-rating: #E9A23B;          /* SOLO estrellas / destacados / calificación */
+    --color-success: #52B788;         /* mensajes de éxito y confirmación (verde menta; NO usar en el header) */
+    --color-success-soft: #E6F5EE;    /* fondo de cajas de éxito */
 
     /* Neutros */
     --color-text: #23281F;
@@ -153,8 +155,10 @@ body { background-color: var(--color-bg); color: var(--color-text); }
 
 /* ================= 4. CÍRCULOS DE CATEGORÍAS ================= */
 .barracategorias-circulos { display: flex; justify-content: center; gap: var(--space-3); padding: var(--space-4) var(--space-2); flex-wrap: wrap; }
-.circulocategoria { width: 90px; height: 90px; perspective: 1000px; cursor: pointer; }
-.circulo-interno { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+/* 75px de círculo + nombre siempre visible debajo (también en móvil) */
+.circulocategoria { width: 84px; perspective: 1000px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.cat-label { font-size: var(--text-xs); font-weight: bold; color: var(--color-primary); text-align: center; line-height: 1.1; }
+.circulo-interno { position: relative; width: 75px; height: 75px; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
 .circulocategoria.activo .circulo-interno { transform: rotateY(180deg); }
 .circulocategoria:hover:not(.activo) .circulo-interno { transform: scale(1.05); }
 .circulo-frente, .circulo-dorso { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: var(--radius-pill); display: flex; justify-content: center; align-items: center; box-shadow: var(--shadow-sm); border: 3px solid white; }

@@ -36,12 +36,14 @@
         .pedido .quitar { background: none; border: 0; color: var(--color-danger); cursor: pointer; font-weight: bold; font-size: 1.1rem; }
         .total { display: flex; justify-content: space-between; font-size: 1.15rem; margin: var(--space-1) 0 var(--space-2); }
         .msg { padding: 10px 12px; border-radius: var(--radius-sm); font-size: .88rem; margin-bottom: var(--space-1); background: var(--color-danger-soft); color: var(--color-danger); }
-        .msg.ok { background: #E6F2EA; color: var(--color-primary); }
+        .msg.ok { background: var(--color-success-soft); color: var(--color-primary); border-left: 4px solid var(--color-success); }
         .vacio { color: var(--color-text-muted); }
         .desc-caja { display: flex; gap: 8px; margin: var(--space-1) 0; }
         .desc-caja input { flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); text-transform: uppercase; }
         .metodo { display: flex; flex-direction: column; gap: 6px; margin: var(--space-1) 0; font-size: .92rem; }
         .metodo label { cursor: pointer; }
+        .aviso-cobro { background: var(--color-success-soft); color: var(--color-primary); border-left: 4px solid var(--color-success); border-radius: var(--radius-sm); padding: 10px 12px; font-size: .88rem; font-weight: bold; margin: var(--space-1) 0; }
+        .aviso-cobro .ck { color: var(--color-success); }
         .enlace-sec { background: none; border: 0; color: var(--color-text-muted); text-decoration: underline; cursor: pointer; margin-top: var(--space-1); }
     </style>
 </head>
@@ -56,7 +58,7 @@
             <a href="contacto.html" class="enlacenav">contacto</a>
         </nav>
         <div class="contenedornaviconos">
-            <a href="catalogo.html#pedido" class="botonperfil" aria-label="Ver mi pedido">
+            <a href="catalogo.html#pedido" class="botonperfil" aria-label="Ver mi reserva">
                 🛒<span id="contadorcarrito" class="contadorcarrito" style="display: none;">0</span>
             </a>
             <div class="contenedorperfil">
@@ -68,7 +70,7 @@
 
     <div class="contenedorinterno">
         <h1 class="titulointerno">catálogo de productos</h1>
-        <p class="vacio" style="margin-bottom: var(--space-2);">Busca productos de las plazas de mercado y sepáralos para recogerlos en el local. Puedes consultar sin iniciar sesión.</p>
+        <p class="vacio" style="margin-bottom: var(--space-2);">Busca productos de las plazas de mercado y resérvalos para recogerlos en el local. Puedes consultar sin iniciar sesión.</p>
 
         <div class="filtros">
             <input type="search" id="fbusca" placeholder="¿Qué buscas? ej: tomate, queso…" aria-label="Buscar producto">
@@ -184,7 +186,7 @@
         aviso = null; confirmada = null;
         const p = porId(id), cant = parseFloat($('q' + id).value);
         if (pedido.items.length && pedido.local !== p.local) {
-            aviso = `Tu pedido es del local ${localDe(pedido.local).codigo}. Sepáralo o vacíalo antes de agregar productos de otro local.`;
+            aviso = `Tu reserva es del local ${localDe(pedido.local).codigo}. Confírmala o vacíala antes de agregar productos de otro local.`;
             return pintarPedido();
         }
         const ya = pedido.items.find(i => i.id === id), r = Inventario.validar(p, cant, ya ? ya.cant : 0);
@@ -229,8 +231,8 @@
     function confirmar() {
         aviso = null;
         const s = FeriSesion.actual();
-        if (!s) { aviso = 'Inicia sesión para separar tu pedido. Tus productos se conservan.'; return pintarPedido(true); }
-        if (s.rol !== 'comprador') { aviso = 'Solo los clientes pueden separar pedidos.'; return pintarPedido(); }
+        if (!s) { aviso = 'Inicia sesión para reservar tu pedido. Tus productos se conservan.'; return pintarPedido(true); }
+        if (s.rol !== 'comprador') { aviso = 'Solo los clientes pueden reservar pedidos.'; return pintarPedido(); }
         const ventas = FeriStore.leer('feriapp_ventas', []);
         const id = Math.max(4, ...ventas.map(v => v.id)) + 1; // el script SQL de ejemplo ya trae 4 ventas
         const venta = { id, cliente: s.id || s.nombre, cliente_nombre: s.nombre, local: pedido.local, fecha: new Date().toISOString(),
@@ -244,7 +246,7 @@
             // Si no se pudo registrar la venta, se devuelven las existencias descontadas.
             lineas.forEach(l => { const p = porId(l.id); p.cant = redondear(p.cant + l.cant); });
             Inventario._guardar();
-            aviso = 'No se pudo registrar el pedido. Inténtalo de nuevo.'; return pintarPedido();
+            aviso = 'No se pudo registrar la reserva. Inténtalo de nuevo.'; return pintarPedido();
         }
         FeriRecibo.generar(venta); // CU-23: el recibo queda guardado en feriapp_recibos
         confirmada = { id, local: localDe(pedido.local), total: venta.total, metodo: metodoPago };
@@ -252,25 +254,30 @@
         vaciar(); pintarGrilla();
     }
 
+    // Línea de seguridad sobre el cobro, según el método de pago elegido (CU-21): presencial → no se cobra ahora.
+    const textoCobro = m => m === 'virtual'
+        ? '<span class="ck">✓</span> Pagas en línea (PSE / tarjeta) al reservar.'
+        : '<span class="ck">✓</span> No se cobra nada ahora. Pagas al recoger en el local.';
     // Dibuja el panel lateral: pedido en borrador, mensajes de aviso o la confirmación con el recibo.
     function pintarPedido(mostrarLogin) {
         const cont = $('pedido');
         if (confirmada) {
             const l = confirmada.local;
-            cont.innerHTML = `<h2 style="color: var(--color-primary);">pedido separado</h2>
-                <p class="msg ok" style="margin-top: var(--space-1);">Número de venta: <strong>#${confirmada.id}</strong></p>
+            cont.innerHTML = `<h2 style="color: var(--color-primary);">reserva confirmada</h2>
+                <p class="msg ok" style="margin-top: var(--space-1);"><span class="ck" style="color: var(--color-success);">✓</span> Reserva confirmada. ${confirmada.metodo === 'virtual' ? 'Pago virtual procesado.' : 'No se cobra nada ahora.'}<br>
+                    Recógelo en el local ${l.codigo} (${l.nombre}) cuando el vendedor lo marque como lista.<br>
+                    Presenta el número de reserva <strong>#${confirmada.id}</strong>.${confirmada.metodo === 'virtual' ? '' : ' Pagas al recoger.'}</p>
                 <p>Total: <strong>${cop(confirmada.total)}</strong></p>
-                <p class="vacio" style="margin-top: var(--space-1);">Recógelo en el local ${l.codigo} (${l.nombre}) cuando el vendedor lo marque como <em>lista</em>. Presenta el número de venta. ${confirmada.metodo === 'virtual' ? 'El pago virtual ya fue procesado.' : 'El pago se hace directamente con el vendedor en el local.'} FeriApp no ofrece financiación.</p>
                 <button class="botonaccion" id="recibo" style="width: 100%; margin-top: var(--space-1);">ver / imprimir recibo</button>
-                <button class="enlace-sec" id="nuevo">hacer otro pedido</button>`;
+                <button class="enlace-sec" id="nuevo">hacer otra reserva</button>`;
             $('recibo').onclick = () => { if (!FeriRecibo.abrir(confirmada.id)) alert('Tu navegador bloqueó la ventana del recibo. Permite las ventanas emergentes o míralo en "mis compras".'); };
             $('nuevo').onclick = () => { confirmada = null; pintarPedido(); };
             return;
         }
-        let h = '<h2 style="color: var(--color-primary);">tu pedido</h2>';
+        let h = '<h2 style="color: var(--color-primary);">tu reserva</h2>';
         if (aviso) h += `<p class="msg" role="alert" style="margin-top: var(--space-1);">${aviso}${mostrarLogin ? ' <a href="login.html?return=catalogo.html"><strong>Iniciar sesión</strong></a>' : ''}</p>`;
         if (!pedido.items.length) {
-            h += '<p class="vacio">Agrega productos de un mismo local para separarlos.</p>';
+            h += '<p class="vacio">Agrega productos de un mismo local para reservarlos.</p>';
         } else {
             const l = localDe(pedido.local);
             h += `<p class="vacio">${l.nombre} · local ${l.codigo}</p><ul>` + pedido.items.map(i => {
@@ -291,8 +298,9 @@
                     <label><input type="radio" name="metodo" value="presencial" ${metodoPago === 'presencial' ? 'checked' : ''}> 💵 Pago presencial en el local</label>
                     <label><input type="radio" name="metodo" value="virtual" ${metodoPago === 'virtual' ? 'checked' : ''}> 💳 Pago virtual (PSE / tarjeta)</label>
                 </div>
-                <button class="botonaccion" id="confirmar" style="width: 100%;">separar pedido</button>
-                <button class="enlace-sec" id="vaciar">vaciar pedido</button>`;
+                <p class="aviso-cobro" id="aviso-cobro">${textoCobro(metodoPago)}</p>
+                <button class="botonaccion" id="confirmar" style="width: 100%;">reservar pedido</button>
+                <button class="enlace-sec" id="vaciar">vaciar reserva</button>`;
         }
         cont.innerHTML = h;
     }
@@ -309,7 +317,7 @@
         if (e.target.id === 'confirmar') confirmar();
         if (e.target.id === 'vaciar') vaciar();
     });
-    $('pedido').addEventListener('change', e => { if (e.target.name === 'metodo') metodoPago = e.target.value; });
+    $('pedido').addEventListener('change', e => { if (e.target.name === 'metodo') { metodoPago = e.target.value; $('aviso-cobro').innerHTML = textoCobro(metodoPago); } });
     ['fbusca', 'fcat', 'flocal'].forEach(id => $(id).addEventListener('input', pintarGrilla));
     $('fplaza').addEventListener('change', () => { llenarLocales(); pintarGrilla(); });
 

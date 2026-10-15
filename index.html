@@ -10,18 +10,21 @@
     <style>
         /* Secciones propias de la portada (usan los tokens de principal.css) */
         .titulo-seccion { text-align: center; color: var(--color-primary); font-size: var(--text-2xl); margin-bottom: var(--space-1); }
-        .sub-seccion { text-align: center; color: var(--color-text-muted); margin-bottom: var(--space-3); }
-        .como-funciona { max-width: 1000px; margin: 0 auto; padding: var(--space-5) var(--space-3) var(--space-3); }
+        .sub-seccion { text-align: center; color: var(--color-text-muted); margin-bottom: var(--space-2); }
+        .como-funciona { max-width: 1000px; margin: 0 auto; padding: var(--space-3) var(--space-3) 0; }
         .pasos { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--space-3); }
-        .paso { background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: var(--space-3); text-align: center; }
-        .paso .num { width: 44px; height: 44px; margin: 0 auto var(--space-1); border-radius: 50%; background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: var(--text-lg); }
-        .paso .ico { font-size: 2rem; display: block; margin-bottom: var(--space-1); }
-        .paso h3 { color: var(--color-primary); margin-bottom: 6px; }
+        .paso { background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: var(--space-2); text-align: center; }
+        /* número e ícono en la misma línea para que los 3 pasos quepan sin hacer scroll */
+        .paso .num { width: 36px; height: 36px; margin: 0 var(--space-1) var(--space-1) 0; border-radius: 50%; background: var(--color-primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; font-size: var(--text-base); vertical-align: middle; }
+        .paso .ico { font-size: 1.75rem; display: inline-block; margin-bottom: var(--space-1); vertical-align: middle; }
+        .paso h3 { color: var(--color-primary); margin-bottom: 4px; }
         .paso p { color: var(--color-text-muted); font-size: var(--text-sm); }
         .cta { text-align: center; padding: var(--space-4) var(--space-3) var(--space-5); }
         .cta .botonaccion { display: inline-block; font-size: var(--text-lg); padding: 16px 40px; }
-        /* El círculo gira al pasar el cursor o enfocarlo para mostrar el nombre de la categoría */
-        .circulocategoria:hover .circulo-interno, .circulocategoria:focus .circulo-interno { transform: rotateY(180deg); }
+        /* Botón secundario del hero: transparente con borde blanco; al pasar el cursor se invierte */
+        .hero-cta { margin-top: var(--space-2); padding: 10px var(--space-3); border: 2px solid #fff; border-radius: var(--radius-pill); background: transparent; color: #fff; font-weight: bold; text-decoration: none; text-align: center; transition: background-color .25s ease, color .25s ease; }
+        .hero-cta:hover, .hero-cta:focus-visible { background: #fff; color: var(--color-primary); }
+        @media (max-width: 600px) { .seccionhero { padding: 0 var(--space-2); } .hero-cta { width: 100%; max-width: 600px; } }
     </style>
 </head>
 <body>
@@ -46,7 +49,7 @@
         </nav>
         <div class="contenedornaviconos">
             <!-- El pedido se arma en el catálogo: el carrito lleva directo a ese panel -->
-            <a href="html/catalogo.html#pedido" class="botonperfil" aria-label="Ver mi pedido">
+            <a href="html/catalogo.html#pedido" class="botonperfil" aria-label="Ver mi reserva">
                 🛒<span id="contadorcarrito" class="contadorcarrito" style="display: none;">0</span>
             </a>
             <div class="contenedorperfil">
@@ -69,26 +72,8 @@
             <input type="text" id="inputbuscador" placeholder="¿qué buscas hoy? ej: mango, tomate, queso..." aria-label="Buscar producto">
             <button id="botonbuscar" aria-label="Buscar">🔍</button>
         </div>
+        <a href="html/catalogo.html" class="hero-cta">Ver catálogo completo →</a>
     </section>
-
-    <!-- Categorías: data-cat es el id de categoría de js/datos.js (1 frutas, 2 verduras, 3 lácteos, 4 tubérculos, 5 hierbas) -->
-    <nav class="barracategorias-circulos" aria-label="Categorías de productos">
-        <div class="circulocategoria" data-cat="1" role="link" tabindex="0" aria-label="Frutas">
-            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">🍎</span></div><div class="circulo-dorso"><span>frutas</span></div></div>
-        </div>
-        <div class="circulocategoria" data-cat="2" role="link" tabindex="0" aria-label="Verduras">
-            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">🥬</span></div><div class="circulo-dorso"><span>verduras</span></div></div>
-        </div>
-        <div class="circulocategoria" data-cat="3" role="link" tabindex="0" aria-label="Lácteos y derivados">
-            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">🧀</span></div><div class="circulo-dorso"><span>lácteos</span></div></div>
-        </div>
-        <div class="circulocategoria" data-cat="4" role="link" tabindex="0" aria-label="Tubérculos">
-            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">🥔</span></div><div class="circulo-dorso"><span>tubérculos</span></div></div>
-        </div>
-        <div class="circulocategoria" data-cat="5" role="link" tabindex="0" aria-label="Hierbas aromáticas">
-            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">🌿</span></div><div class="circulo-dorso"><span>hierbas</span></div></div>
-        </div>
-    </nav>
 
     <section class="como-funciona" aria-labelledby="titulo-como">
         <h2 class="titulo-seccion" id="titulo-como">cómo funciona</h2>
@@ -101,16 +86,40 @@
             </div>
             <div class="paso">
                 <div class="num">2</div><span class="ico" aria-hidden="true">🧺</span>
-                <h3>separa tu pedido</h3>
-                <p>Elige las cantidades de un mismo local y sepáralo. Las existencias se reservan para ti.</p>
+                <h3>reserva tu pedido</h3>
+                <p>Elige las cantidades de un mismo local y resérvalas. Las existencias quedan apartadas para ti.</p>
             </div>
             <div class="paso">
                 <div class="num">3</div><span class="ico" aria-hidden="true">🏪</span>
                 <h3>recoge en la plaza</h3>
-                <p>Cuando el vendedor lo marque como listo, pásalo a recoger al local con tu número de venta.</p>
+                <p>Cuando el vendedor lo marque como listo, pásalo a recoger al local con tu número de reserva.</p>
             </div>
         </div>
     </section>
+
+    <!-- Categorías: data-cat es el id de categoría de js/datos.js (1 frutas, 2 verduras, 3 lácteos, 4 tubérculos, 5 hierbas) -->
+    <nav class="barracategorias-circulos" aria-label="Categorías de productos">
+        <div class="circulocategoria" data-cat="1" role="link" tabindex="0" aria-label="Frutas">
+            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">🍎</span></div><div class="circulo-dorso"><span>frutas</span></div></div>
+            <span class="cat-label">frutas</span>
+        </div>
+        <div class="circulocategoria" data-cat="2" role="link" tabindex="0" aria-label="Verduras">
+            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">🥬</span></div><div class="circulo-dorso"><span>verduras</span></div></div>
+            <span class="cat-label">verduras</span>
+        </div>
+        <div class="circulocategoria" data-cat="3" role="link" tabindex="0" aria-label="Lácteos y derivados">
+            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">🧀</span></div><div class="circulo-dorso"><span>lácteos</span></div></div>
+            <span class="cat-label">lácteos</span>
+        </div>
+        <div class="circulocategoria" data-cat="4" role="link" tabindex="0" aria-label="Tubérculos">
+            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">🥔</span></div><div class="circulo-dorso"><span>tubérculos</span></div></div>
+            <span class="cat-label">tubérculos</span>
+        </div>
+        <div class="circulocategoria" data-cat="5" role="link" tabindex="0" aria-label="Hierbas aromáticas">
+            <div class="circulo-interno"><div class="circulo-frente"><span class="icono-cat">🌿</span></div><div class="circulo-dorso"><span>hierbas</span></div></div>
+            <span class="cat-label">hierbas</span>
+        </div>
+    </nav>
 
     <section class="cta">
         <a href="html/catalogo.html" class="botonaccion">ver catálogo completo</a>
@@ -136,7 +145,8 @@
             });
             // Cada círculo de categoría lleva al catálogo filtrado
             document.querySelectorAll('.circulocategoria').forEach(function (c) {
-                const ir = function () { irAlCatalogo({ cat: c.dataset.cat }); };
+                // El círculo gira (clase .activo de principal.css) y luego lleva al catálogo filtrado
+                const ir = function () { c.classList.add('activo'); setTimeout(function () { irAlCatalogo({ cat: c.dataset.cat }); }, 500); };
                 c.addEventListener('click', ir);
                 c.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ir(); } });
             });

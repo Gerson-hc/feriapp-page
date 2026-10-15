@@ -39,8 +39,9 @@
             if (!li) return;
             const cumple = r.ok(valor);
             li.firstElementChild.textContent = cumple ? '☑' : '☐';
-            li.style.color = cumple ? '#34833c' : '#666';
+            li.style.color = cumple ? 'var(--color-primary)' : '#666';
             li.style.fontWeight = cumple ? 'bold' : 'normal';
+            li.firstElementChild.style.color = cumple ? 'var(--color-success)' : '';
         });
     }
 
@@ -179,11 +180,11 @@
             input.style.backgroundColor = '#fff0f0';
             input.setAttribute('aria-invalid', 'true');
         } else {
-            error.textContent = '✓ Correcto';
+            error.innerHTML = '<span style="color: var(--color-success);">✓</span> Correcto';
             error.style.display = 'block';
-            error.style.color = '#34833c';
+            error.style.color = 'var(--color-primary)';
             error.style.backgroundColor = 'transparent';
-            input.style.borderColor = '#34833c';
+            input.style.borderColor = 'var(--color-success)';
             input.style.backgroundColor = '#fff';
             input.setAttribute('aria-invalid', 'false');
         }

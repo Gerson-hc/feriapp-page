@@ -112,13 +112,15 @@ feriapp-page/
 │   └── autenticacion.css
 ├── js/
 │   ├── principal.js
+│   ├── datos.js
 │   └── autenticacion.js
 ├── Imagenes/
 └── html/
     ├── login.html
     ├── registro.html
     ├── recuperacion.html
-    ├── carrito.html
+    ├── catalogo.html
+    ├── mapa.html
     ├── perfil.html
     ├── pedidos.html
     ├── devoluciones.html
